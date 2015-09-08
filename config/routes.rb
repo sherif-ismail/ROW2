@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   root 'traffic#index'
 
+  get 'game' => 'traffic#game'
+
   get 'diar/index'
 
   get 'star/index'

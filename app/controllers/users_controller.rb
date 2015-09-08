@@ -26,4 +26,5 @@ private
 			:password_confirmation)
 	end
 
+
 end
