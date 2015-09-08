@@ -1,1 +1,10 @@
-<%= @user.name %>, <%= @user.email %>
+<div class="center jumbotron">
+  <h1>Welcome <%= @user.name %></h1>
+
+  <h2>
+    To play the game click on the button below :D
+  </h2>
+
+  <%= link_to "RoW Game", game_path, class: "btn btn-lg btn-primary" %>
+</div>
+
