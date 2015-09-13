@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  body: MyText
+  choice1: MyText
+  choice2: MyText
+  choice3: MyText
+  choice4: MyText
+  category: MyString
+  path: MyString
+
+two:
+  body: MyText
+  choice1: MyText
+  choice2: MyText
+  choice3: MyText
+  choice4: MyText
+  category: MyString
+  path: MyString
