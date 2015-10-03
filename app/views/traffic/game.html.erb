@@ -17,15 +17,14 @@
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
     function preload() {
-        var image_path = '<%= asset_path 'sky.png' %>'
-        game.load.image('sky', image_path);
-        game.load.image('ground', 'http://localhost:3000/assets/platform.png');
-        game.load.image('bubble', 'http://localhost:3000/assets/bubble.png');
-        game.load.image('star', 'http://localhost:3000/assets/star.png');
-        game.load.image('ball', 'http://localhost:3000/assets/ball-tlb.png');
-        game.load.image('diamond', 'http://localhost:3000/assets/diamond.png');
-        game.load.image('car', 'http://localhost:3000/assets/car.png');
-        game.load.spritesheet('dude', 'http://localhost:3000/assets/dude.png', 32, 48);
+        game.load.image('sky', '<%= asset_path 'sky.png' %>');
+        game.load.image('ground',  '<%= asset_path 'platform.png' %>');
+        game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
+        game.load.image('star', '<%= asset_path 'star.png' %>');
+        game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
+        game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
+        game.load.image('car', '<%= asset_path 'car.png' %>');
+        game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
 
     }
 
@@ -282,7 +281,7 @@ function createPopup(){
     var text = game.add.text(20, 10, "1", style);
     closeButton.addChild(text);
 
-    text = game.add.text(0, 0, " Question ", style);
+    text = game.add.text(0, 0, " Question " + '<%= current_user.name %>', style);
     text.anchor.set(0.5);
     Popup.addChild(text);
     text.scale.setTo(1/0.8,1/8);
@@ -359,6 +358,5 @@ function updateTimer(){
 }
 
 </script>
-
 </body>
 </html>
