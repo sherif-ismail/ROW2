@@ -13,51 +13,55 @@
 <body>
 
     <script type="text/javascript">
+    //setTimeout(testChange,26000);
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: IntroPreload, create: IntroCreate, update:IntroUpdate});
+    function testChange(){
+        alert();
+        game.destroy();
+        game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+    }
 
-    setTimeout(createCustomer,1000);
-    setTimeout(createLawyers,3000);
-    setTimeout(createLawPopup,1000);
-    setTimeout(createPopup,1000);
-    setInterval(showCustomer,10000);
- //   setTimeout(showPopup,4444);
+    function IntroPreload(){
+        game.load.image('button', '<%= asset_path 'ti.png' %>');
+    }
+    function IntroCreate(){
+        var button1 = game.add.sprite(0, 0, 'button');
+        button1.scale.setTo(0.5,0.5);
+    }
+    function IntroUpdate(){
+
+    }
+    function preload() {
+        game.load.image('sky', '<%= asset_path 'sky.png' %>');
+        game.load.image('ground',  '<%= asset_path 'platform.png' %>');
+        game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
+        game.load.image('star', '<%= asset_path 'star.png' %>');
+        game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
+        game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
+        game.load.image('car', '<%= asset_path 'car.png' %>');
+        game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
+
+    }
+
+    var car;
+    var platforms;
+    var cursors;
+
+    var dudes;
+    var score = 0;
+    var scoreText;
+    var dudes;
+    var diamonds;
+    var stops;
+    var timerText;
+    var time;
+    var checkPoint;
+    var stars;
+    var Popup;
+    var style = { font: "32px Arial", fill: "#ff0000", wordWrap: true, wordWrapWidth: popup.width, align: "center" };
 
 
- var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-
- function preload() {
-
-    game.load.image('sky', 'http://localhost:3000/assets/sky.png');
-    game.load.image('ground', 'http://localhost:3000/assets/platform.png');
-    game.load.image('star', 'http://localhost:3000/assets/star.png');
-    game.load.image('bubble', 'http://localhost:3000/assets/bubble.png');
-    game.load.image('red_ball', 'http://localhost:3000/assets/ball-tlb.png');
-    game.load.image('blue_ball', 'http://localhost:3000/assets/blue_ball.png');
-    game.load.image('green_ball', 'http://localhost:3000/assets/green_ball.png');
-    game.load.spritesheet('dude', 'http://localhost:3000/assets/dude.png', 32, 48);
-
-
-}
-
-var lawyers = [];
-var lawyersx = new Array();
-var lawyersy = new Array();
-var Laws;
-var style = { font: "32px Arial", fill: "#ff0000", wordWrap: true, wordWrapWidth: popup.width, align: "center" };
-
-var player;
-var platforms;
-var cursors;
-var customer;
-var isCustomer = false;
-var popup;
-
-var stars;
-var score;
-var scoreText;
-
-
-function create() {
-    score = 0;
+    function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -80,408 +84,294 @@ function create() {
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
 
+
     //  Now let's create two ledges
-    var ledge = platforms.create(700, 400, 'ground');
-    ledge.scale.setTo(0.3,0.5);
+    var ledge = platforms.create(650, 0, 'ground');
+    ledge.scale.setTo(5,25);
     ledge.body.immovable = true;
 
-    // ledge = platforms.create(-150, 350, 'ground');
-    //ledge.body.immovable = true;
-
-    ledge = platforms.create(600, 300, 'ground');
-    ledge.scale.setTo(0.5,0.5);
+    ledge = platforms.create(-150, 0, 'ground');
+    ledge.scale.setTo(0.6,25);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(500, 200, 'ground');
-    ledge.scale.setTo(0.8,0.5);
+    ledge = platforms.create(-150, 0, 'ground');
+    ledge.scale.setTo(2,2);
     ledge.body.immovable = true;
 
+    ledge = platforms.create(-150, 0, 'ground');
+    ledge.scale.setTo(2,2);
+    ledge.body.immovable = true;
 
-    // The player and its settings
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
+    ledge = platforms.create(230, 0, 'ground');
+    ledge.scale.setTo(0.7,8);
+    ledge.body.immovable = true;
 
-    //  We need to enable physics on the player
-    game.physics.arcade.enable(player);
+    ledge = platforms.create(230, game.world.height - 250, 'ground');
+    ledge.scale.setTo(0.7,8);
+    ledge.body.immovable = true;
 
-    //  Player physics properties. Give the little guy a slight bounce.
-    player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
-    player.body.collideWorldBounds = true;
-
-    //  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    //  The score
+    scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
 
-    scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+    // Examiners
 
-    
+    dudes = game.add.group();
+
+    //  We will enable physics for any star that is created in this group
+    dudes.enableBody = true;
+
+    // Questions
+    stars = game.add.group();
+
+    //  We will enable physics for any star that is created in this group
+    stars.enableBody = true;
+
+
+    diamonds = game.add.group();
+
+    //  We will enable physics for any star that is created in this group
+    diamonds.enableBody = true;
+
+    stops = game.add.group();
+
+    stops.enableBody = true;
+    stops.create(130,100,'bubble');
+    stops.create(130,430,'bubble');
+    stops.create(550,430,'bubble');
+    stops.create(550,100,'bubble');
+    stops.sort();
+    createDude();
+
+    // The car and its settings
+    car = game.add.sprite(140, game.world.height - 250, 'car');
+    car.scale.setTo(0.1,0.1);
+    //  We need to enable physics on the car
+    game.physics.arcade.enable(car);
+
+    //  car physics properties. Give the little guy a slight bounce.
+
+    car.body.collideWorldBounds = true;
+
+    car.body.collideWorldBounds = true;
+
+    car.anchor.setTo(0.3, 0.5);
+
+    checkPoint = game.add.sprite(game.world.width/2 - 30,220,'ball');
+
+    createPopup();
+
+    //  Our two animations, walking left and right.
+    car.animations.add('left', [0, 1, 2, 3], 10, true);
+    car.animations.add('right', [5, 6, 7, 8], 10, true);
+
 }
 
 function update() {
 
-    //  Collide the player and the stars with the platforms
-    game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(customer, platforms);
-    game.physics.arcade.collide(customer, player);
-    game.physics.arcade.collide(stars, platforms);
-    game.physics.arcade.collide(lawyers, platforms);
-    game.physics.arcade.collide(player, lawyers);
+    //  Collide the car and the stars with the platforms
+    game.physics.arcade.collide(car, platforms);
+    game.physics.arcade.collide(dudes, platforms);
 
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    //  Checks to see if the car overlaps with any of the stars, if he does call the collectStar function
+    game.physics.arcade.overlap(car, dudes , collectDude, null, this);
+    game.physics.arcade.overlap(car, diamonds, collectDiamond, null, this);
+    game.physics.arcade.overlap(car, stars, collectStar, null, this);
 
-    //  Reset the players velocity (movement)
-    player.body.velocity.x = 0;
-    if(isCustomer){
-        customer.body.velocity.x = 0;
+    car.body.velocity.x = 0;
+    car.body.velocity.y = 0;
+    car.body.angularVelocity = 0;
+    var move = false;
+    var reverse = false;
+    car.angle -= 90;
 
+    if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
+    {
+        game.physics.arcade.velocityFromAngle(car.angle, 250, car.body.velocity);
+        move = true;
     }
 
-
-
-    //lawyers[0].worldX
-
-/*    if(isCustomer && customer.x == player.x){
-        customer.y = 444;
+    if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+    {
+        game.physics.arcade.velocityFromAngle(car.angle, -250, car.body.velocity);
+        reverse = true;
     }
-    */
+
+    if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+    {
+        if(move){
+            car.body.angularVelocity = -150;
+        }else if(reverse){
+            car.body.angularVelocity = +150;
+        }
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) )
+    {
+        if(move){
+            car.body.angularVelocity = +150;
+        }else if(reverse){
+            car.body.angularVelocity = -150;
+        }    
+    }
+
+    car.angle += 90;
+
+    /*
+    //  Reset the cars velocity (movement)
+    car.body.velocity.x = 0;
+
     if (cursors.left.isDown)
     {
         //  Move to the left
-        player.body.velocity.x = -150;
-
-        player.animations.play('left');
-
-        if(isCustomer == true){
-
-            customer.body.velocity.x = -150;
-
-            customer.animations.play('left');
-        }
+        car.body.velocity.x = -150;
+        if(car.angle != -90)
+            car.angle -= 0;
+        car.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
-        player.body.velocity.x = 150;
-
-        player.animations.play('right');
-
-        if(isCustomer == true){
-
-            customer.body.velocity.x = 150;
-
-            customer.animations.play('right');
-        }
+        car.body.velocity.x = 150;
+        if(car.angle != 90)
+             car.angle +=0;
+        car.animations.play('right');
+    }
+    else if (cursors.up.isDown)
+    {
+        car.body.velocity.y = -100;
+    }
+    else if (cursors.down.isDown)
+    {
+        car.body.velocity.y = +100;
     }
     else
     {
         //  Stand still
-        player.animations.stop();
-        player.frame = 4;
+        car.animations.stop();
+        car.body.velocity.y = 0;
 
-        if(isCustomer){
-
-            customer.animations.stop();
-
-            customer.frame = 4;
-        }
+        car.frame = 4;
     }
     
-    //  Allow the player to jump if they are touching the ground.
-    if (cursors.up.isDown && player.body.touching.down)
-    {
-        player.body.velocity.y = -450;
+    //  Allow the car to jump if they are touching the ground.
 
-        if(isCustomer == true){
-
-            customer.body.velocity.y = -450;
-        }
-    }
-
-
-}
-
-function collectStar (player, star) {
-
-    // Removes the star from the screen
-    star.kill();
-
-    //  Add and update the score
-    score += 10;
-
-}
-
-function createLawyers(){
-
-    lawyers[0] = game.add.sprite(800, 350, 'blue_ball');
-    lawyers[0].scale.setTo(0.55,0.55);
-
-    game.physics.arcade.enable(lawyers[0]);
-    lawyers[0].body.gravity.y = 300;
-    lawyers[0].body.collideWorldBounds = true;
-    lawyers[0].body.bounce = 0.2
-    lawyers[0].inputEnabled = true;
-    lawyers[0].events.onInputDown.add(clickLawyer, this);
-
-    lawyers[1] = game.add.sprite(800, 250, 'red_ball');
-    lawyers[1].scale.setTo(0.85,0.85);
-
-    game.physics.arcade.enable(lawyers[1]);
-    lawyers[1].body.gravity.y = 300;
-    lawyers[1].body.collideWorldBounds = true;
-    lawyers[1].body.bounce = 0.2;
-    lawyers[1].inputEnabled = true;
-    lawyers[1].events.onInputDown.add(clickLawyer, this);
-
-    lawyers[2] = game.add.sprite(800, 150, 'green_ball');
-    lawyers[2].scale.setTo(0.55,0.55);
-
-    game.physics.arcade.enable(lawyers[2]);
-    lawyers[2].body.gravity.y = 300;
-    lawyers[2].body.collideWorldBounds = true;
-    lawyers[2].body.bounce = 0.2;
-    lawyers[2].inputEnabled = true;
-    lawyers[2].events.onInputDown.add(clickLawyer, this);
-
-
-
-}
-
-function createCustomer(){
-    customer = game.add.sprite(1, game.world.height - 150, 'dude');
-
-    game.physics.arcade.enable(customer);
-
-   // customer = game.add.sprite(1, game.world.height - 150, 'dude');
-   customer.body.bounce.y = 0.2;
-   customer.body.gravity.y = 300;
-   customer.body.collideWorldBounds = true;
-
-    //  Our two animations, walking left and right.
-    customer.animations.add('left', [0, 1, 2, 3], 10, true);
-    customer.animations.add('right', [5, 6, 7, 8], 10, true);
-    customer.inputEnabled = true;
-    customer.events.onInputDown.add(clickCustomer, this);
-    customer.visible = false;
-
-
-   // isCustomer = true;
-}
-
-var textt;
-function createPopup(){
-    //The popup
-
-    popup = game.add.sprite(game.world.centerX, game.world.centerY, 'ground');
-    popup.alpha = 0.8;
-    popup.anchor.set(0.5);
-    popup.inputEnabled = true;
-    popup.input.enableDrag();
-
-
-    //  Position the close button to the top-right of the popup sprite (minus 8px for spacing)
-    var pw = (popup.width ) - 22;
-    var ph = (popup.height ) - 22;
-
-    //  And click the close button to close it down again
-    popup.scale.setTo(0.8,8);
-    var closeButton = game.make.sprite(((popup.width / 2 - 80)/ 0.8), ((popup.height / 2 - 70) / 8), 'bubble');
-    closeButton.inputEnabled = true;
-    closeButton.input.priorityID = 1;
-    closeButton.input.useHandCursor = true;
-    closeButton.events.onInputDown.add(followCustomer, this);
-
-    // Second Button
-    var closeButton1 = game.make.sprite(-((popup.width / 2 - 20)/ 0.8), ((popup.height / 2 - 70) / 8), 'bubble');
-    closeButton1.inputEnabled = true;
-    closeButton1.input.priorityID = 1;
-    closeButton1.input.useHandCursor = true;
-    closeButton1.events.onInputDown.add(goCustomer, this);
-
-    //  Add the "close button" to the popup window image
-    popup.addChild(closeButton);
-    closeButton.scale.setTo(1/0.8,1/8);
-
-    popup.addChild(closeButton1);
-    closeButton1.scale.setTo(1/0.8,1/8);
-   // popup.scale.set(0.1);
-
-
-   textt = game.add.text(0, 0, "Tmam wla ?\ndrag me", style);
-   textt.anchor.set(0.5);
-   popup.addChild(textt);
-   textt.scale.setTo(1/0.8,1/8);
-
-
-   var text2 = game.add.text(10, 10, "Yes", style);
-   closeButton.addChild(text2);
-
-   var text3 = game.add.text(10,10,"No",style);
-   closeButton1.addChild(text3);
-   popup.visible = false;
-
-}
-var textt;
-function createLawPopup(){
-    Laws = game.add.sprite(game.world.centerX, game.world.centerY, 'ground');
-    Laws.alpha = 0.8;
-    Laws.anchor.set(0.5);
-    Laws.inputEnabled = true;
-    Laws.input.enableDrag();
-
-
-    //  Position the close button to the top-right of the Laws sprite (minus 8px for spacing)
-    var pw = (Laws.width ) - 22;
-    var ph = (Laws.height ) - 22;
-
-    //  And click the close button to close it down again
-    Laws.scale.setTo(0.8,8);
-    var closeButton = game.make.sprite(((Laws.width / 2 - 80)/ 0.8), ((Laws.height / 2 - 70) / 8), 'bubble');
-    closeButton.inputEnabled = true;
-    closeButton.input.priorityID = 1;
-    closeButton.input.useHandCursor = true;
-    closeButton.events.onInputDown.add(hideLawPopup, this);
-
-    Laws.addChild(closeButton);
-    closeButton.scale.setTo(1/0.8,1/8);
-
-    textt = game.add.text(0, 0, " Lawyer Expert in:\n 1. First Law\n 2. Second Law \n 3. Third Law", style);
-    textt.anchor.set(0.5);
-    Laws.addChild(textt);
-    textt.scale.setTo(1/0.8,1/8);
-
-    var text2 = game.add.text(20, 10, "X", style);
-    closeButton.addChild(text2);
-    hideLawPopup();
-}
-
-function hideLawPopup(){
-    Laws.visible = false;
-}
-
-function showLawPopup(){
-    Laws.visible = true;
-}
-
-function showCustomer(){
-    if(customer.visible == false){
-        customer.reset(1,game.world.height - 150);
-    }
-}
-
-function goCustomer() {
-    customer.visible = false;
-    popup.visible = false;
-    if(random == 4){
-        score += 100;
-    }else{
-        score -= 100;
-    }
-    scoreText.text = 'Score: ' + score;
-}
-
-
-function clickCustomer(){
-    if(!isCustomer && player.world.x >= (customer.world.x-40) && player.world.x <= (customer.world.x+40)){
-        popup.visible = true;
-        randomCase();
-    }
-
-}
-var random;
-function randomCase(){
-    random = Math.floor((Math.random() * 4) + 1);
-    if(random == 1){
-        textt.text = "Answer: Blue Lawyer \nDo I have a right?";
-    }else if(random == 2 ){
-        textt.text = "Answer: Red Lawyer \nDo I have a right?";
-    }else if(random == 3){
-        textt.text = "Answer: Green Lawyer \nDo I have a right?";
-    }else{
-        textt.text = "Answer: No Right \nDo I have a right?";
-    }
-}
-
-function followCustomer(){
-
-    isCustomer = true;
-    popup.visible = false;
-}
-
-var currentLawyer = false;
-
-function clickLawyer(sprite, pointer){
-    if(isCustomer && !currentLawyer && player.body.touching.down &&  player.world.y > 300 && player.world.y < 400 && sprite.key == 'blue_ball'){
-        sprite.visible = false;
-        customer.visible = false;
-        currentLawyer = sprite;
-        if(random == 1){
-            score += 100;
-
-        }else{
-            score -= 100;
-
-        }
-        scoreText.text = 'Score: ' + score;
-        setTimeout(returnFromCourt,5000);
-    }else if(isCustomer && !currentLawyer && player.body.touching.down &&  player.world.y > 100 && player.world.y < 200){
-        sprite.visible = false;
-        customer.visible = false;
-        currentLawyer = sprite;
-        if(random == 3){
-            score += 100;
-
-        }else{
-            score -= 100;
-
-        }
-        scoreText.text = 'Score: ' + score;
-        setTimeout(returnFromCourt,5000);
-    }
-    else if(isCustomer && !currentLawyer && player.body.touching.down &&  player.world.y > 200 && player.world.y < 300){
-        sprite.visible = false;
-        customer.visible = false;
-        currentLawyer = sprite;
-        if(random == 2){
-            score += 100;
-
-        }else{
-            score -= 100;
-
-        }
-        scoreText.text = 'Score: ' + score;
-        setTimeout(returnFromCourt,5000);
-    }
-    else{
-        showLawPopup();
-    }
-
-   /* for(i = 0; i < lawyers.length; i++){
-        alert(lawyersx[i] + "" + pointer.worldX + ",  " + lawyersy[i] + " " + pointer.worldY)
-        if(lawyersx[i] == pointer.worldX && lawyersy[i] == pointer.worldY){
-            alert();
-        }
-    }*/
-}
-
-function returnFromCourt(){
-    currentLawyer.visible = true;
-    isCustomer = false;
-    currentLawyer = false;
-}
-
-function updateLawyerPosition(){
-  /*  for( i = 0; i < lawyers.length; i++){
-        lawyersx.push(lawyers[i].world.x);
-        lawyersy.push(lawyers[i].world.y);
-    }
     */
 }
 
-</script>
+function createPopup(){
+    Popup = game.add.sprite(game.world.centerX, game.world.centerY, 'ground');
+    Popup.alpha = 0.8;
+    Popup.anchor.set(0.5);
+    Popup.inputEnabled = true;
+    Popup.input.enableDrag();
 
+
+    //  Position the close button to the top-right of the Popup sprite (minus 8px for spacing)
+    var pw = (Popup.width ) - 22;
+    var ph = (Popup.height ) - 22;
+
+    //  And click the close button to close it down again
+    Popup.scale.setTo(0.8,8);
+    var closeButton = game.make.sprite(((Popup.width / 2 - 80)/ 0.8), ((Popup.height / 2 - 70) / 8), 'bubble');
+    closeButton.inputEnabled = true;
+    closeButton.input.priorityID = 1;
+    closeButton.input.useHandCursor = true;
+    closeButton.events.onInputDown.add(hidePopup, this);
+
+    Popup.addChild(closeButton);
+    closeButton.scale.setTo(1/0.8,1/8);
+    var text = game.add.text(20, 10, "2", style);
+    closeButton.addChild(text);
+
+    closeButton = game.make.sprite(((Popup.width / 2 - 300)/ 0.8), ((Popup.height / 2 - 70) / 8), 'bubble');
+    closeButton.inputEnabled = true;
+    closeButton.input.priorityID = 1;
+    closeButton.input.useHandCursor = true;
+    closeButton.events.onInputDown.add(hidePopup, this);
+
+    Popup.addChild(closeButton);
+    closeButton.scale.setTo(1/0.8,1/8);
+    var text = game.add.text(20, 10, "1", style);
+    closeButton.addChild(text);
+
+    text = game.add.text(0, 0, " Question " , style);
+    text.anchor.set(0.5);
+    Popup.addChild(text);
+    text.scale.setTo(1/0.8,1/8);
+
+    Popup.visible = false;
+    // lawlalwl
+}
+
+function collectDude (car, star) {
+    dudes.getChildAt(0).destroy();
+    createDiamond();
+    createStar();
+    startTimer();
+}
+
+function hidePopup(){
+    Popup.visible = false;
+}
+
+
+function collectDiamond (car, star){
+    diamonds.getChildAt(0).destroy();
+    if(stars.countLiving() != 0)
+        stars.getChildAt(0).destroy();
+    createDude();
+    score += 10*time;
+    scoreText.text = 'Score: ' + score;
+    time = 0;
+    timerText.text = '';
+}
+
+var random;
+function createDude(){
+    random = parseInt(Math.random()*4);
+    var child;
+    child = stops.getChildAt(random);
+    dudes.create(child.x+15,child.y+5,'dude');
+}
+
+function createDiamond(){
+    var newRandom = parseInt(Math.random()*4);
+    while(random == newRandom){
+        newRandom = parseInt(Math.random()*4);;
+    }
+    var child;
+    child = stops.getChildAt(newRandom);
+    diamonds.create(child.x+15 ,child.y+15,'diamond');
+}
+
+function createStar(){
+    stars.create(game.world.width/2 - 30,270,'star');
+}
+
+function collectStar(){
+    stars.getChildAt(0).destroy();
+    Popup.visible = true;
+}
+
+function startTimer(){
+    timerText = game.add.text(260, 16, '', { fontSize: '32px', fill: '#000' });
+    time = 40;
+    updateTimer();
+}
+
+function updateTimer(){
+    if(time > 0){
+        time -= 1;
+        timerText.text = 'Time Left: ' + time;
+        setTimeout(updateTimer,1000);
+    }else{
+        timerText.text = '';
+
+    }
+}
+
+</script>
 </body>
 </html>

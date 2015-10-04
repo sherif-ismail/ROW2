@@ -5,13 +5,13 @@ Rails.application.routes.draw do
 
   get 'users/new'
 
-  root 'traffic#index'
-
-  get 'game' => 'traffic#game'
-
   get 'diar/index'
 
   get 'star/index'
+
+  root 'traffic#index'
+
+  get 'game' => 'traffic#game'
 
   get 'signup'  => 'users#new'
 
