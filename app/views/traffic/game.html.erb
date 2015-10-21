@@ -13,7 +13,7 @@
 <body>
 
     <script type="text/javascript">
-
+   // alert('<%= @questions[1].category %>');
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
     function preload() {
@@ -281,7 +281,7 @@ function createPopup(){
     var text = game.add.text(20, 10, "1", style);
     closeButton.addChild(text);
 
-    text = game.add.text(0, 0, " Question " + '<%= current_user.name %>', style);
+    text = game.add.text(0, 0, " Question " + '<%= @questions[1].body %>', style);
     text.anchor.set(0.5);
     Popup.addChild(text);
     text.scale.setTo(1/0.8,1/8);
