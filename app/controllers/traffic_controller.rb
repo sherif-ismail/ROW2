@@ -8,6 +8,7 @@ class TrafficController < ApplicationController
       flash[:danger] = "Please log in."
       redirect_to login_url
     end
+    @questions = get_all_questions
   end
 
 
