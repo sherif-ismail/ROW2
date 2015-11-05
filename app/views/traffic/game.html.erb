@@ -14,7 +14,8 @@
 
     <script type="text/javascript">
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
-    setInterval(updateNitro,250)
+    setInterval(updateNitro,100)
+
     function preload() {
         game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
         game.load.bitmapFont('stack', '<%= asset_path 'shortStack.png' %>', '<%= asset_path 'shortStack.xml' %>');
@@ -46,7 +47,7 @@
     var scoreText;
     var nitroText;
     var msgText;
-    var nitroLeft = 40;
+    var nitroLeft = 100;
     var nitro;
     var dudes;
     var diamonds;
@@ -154,7 +155,7 @@
     // game.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#FFFFFF',  });
 
     // Nitrous
-    nitroText = game.add.bitmapText(650, 0, 'desyrel', 'Nitro:' + nitroLeft, 32);
+    nitroText = game.add.bitmapText(635, 0, 'desyrel', 'Nitro: Full', 32);
     // game.add.text(420, 5, 'Nitro: 60', { fontSize: '32px', fill: '#FFFFFF',  });
     msgText = game.add.bitmapText(430, 0, 'desyrel', 'Go Crazy!!', 34);
     msgText.visible = false;
@@ -301,7 +302,7 @@ function createPopup(){
     Popup.scale.setTo(1.5,1.1);
     answer1Text = game.add.text(-220, -50, "Answer 1", normalStyle);
     answer1Text.inputEnabled = true;
-    answer1Text.events.onInputDown.add(hidePopup, this);
+    answer1Text.events.onInputDown.add(GiveAnswer, this);
     answer1Text.input.priorityID = 1;
     answer1Text.input.useHandCursor = true;
     answer1Text.events.onInputOver.add(AnswerHoverIn, this);
@@ -310,7 +311,7 @@ function createPopup(){
 
     answer2Text = game.add.text(-220, +50, "Answer 2", normalStyle);
     answer2Text.inputEnabled = true;
-    answer2Text.events.onInputDown.add(hidePopup, this);
+    answer2Text.events.onInputDown.add(GiveAnswer, this);
     answer2Text.input.priorityID = 1;
     answer2Text.input.useHandCursor = true;
     answer2Text.events.onInputOver.add(AnswerHoverIn, this);
@@ -319,7 +320,7 @@ function createPopup(){
 
     answer3Text = game.add.text(0, -50, "Answer 3", normalStyle);
     answer3Text.inputEnabled = true;
-    answer3Text.events.onInputDown.add(hidePopup, this);
+    answer3Text.events.onInputDown.add(GiveAnswer, this);
     answer3Text.input.priorityID = 1;
     answer3Text.input.useHandCursor = true;
     answer3Text.events.onInputOver.add(AnswerHoverIn, this);
@@ -328,23 +329,38 @@ function createPopup(){
 
     answer4Text = game.add.text(0, +50, "Answer 4", normalStyle);
     answer4Text.inputEnabled = true;
-    answer4Text.events.onInputDown.add(hidePopup, this);
+    answer4Text.events.onInputDown.add(GiveAnswer, this);
     answer4Text.input.priorityID = 1;
     answer4Text.input.useHandCursor = true;
     answer4Text.events.onInputOver.add(AnswerHoverIn, this);
     answer4Text.events.onInputOut.add(AnswerHoverOut, this);
     Popup.addChild(answer4Text);
 
-    var text = game.add.bitmapText(0, -200, 'desyrel', 'Question', 33);
+    questionText = game.add.bitmapText(0, -200, 'desyrel', 'Question', 33);
     //game.add.text(0, -200, " Question " + '', style);
-    text.anchor.set(0.5);
-    Popup.addChild(text);
-
+    questionText.anchor.set(0.5);
+    Popup.addChild(questionText);
+    NextQuestion()
     Popup.visible = false;
 }
 
 function NextQuestion(){
-    
+    '<%= srand(Time.now.to_i) %>'
+    '<%= r = rand(0..@questions.length-1) %>'
+    alert('<%= r %> ')
+    questionText.text = '<%=  @questions[r].body %>'
+    answer1Text.text = '<%= @questions[r].choice1 %>'
+    '<%= r = rand(0..@signsAnswers.length-1) %>'
+    answer2Text.text = '<%= @signsAnswers[r] %>'
+    '<%= r = rand(0..@signsAnswers.length-1) %>'
+    answer3Text.text = '<%= @signsAnswers[r] %>'
+    '<%= r = rand(0..@signsAnswers.length-1) %>'
+    answer4Text.text = '<%= @signsAnswers[r] %>'
+
+}
+
+function GiveAnswer(){
+    NextQuestion();
 }
 
 function AnswerHoverIn(answer){
@@ -370,7 +386,7 @@ function updateNitro(){
     msgText.visible = false;
     if(nitro){
         nitroLeft -= 1;
-        nitroText.text = 'Nitro: '+ nitroLeft
+        nitroText.text = 'Nitro: '+ nitroLeft+'%'
         msgText.visible = true;
     }
 }
@@ -429,6 +445,7 @@ function updateTimer(){
     }else{
         timerText.text = '';
         createDude();
+        hidePopup();
     }
 }
 
