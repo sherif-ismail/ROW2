@@ -14,15 +14,20 @@
 
     <script type="text/javascript">
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
-
+    setInterval(updateNitro,1000)
     function preload() {
-        game.load.image('sky', '<%= asset_path 'sky.png' %>');
+        game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
+        game.load.bitmapFont('stack', '<%= asset_path 'shortStack.png' %>', '<%= asset_path 'shortStack.xml' %>');
+        game.load.image('Street', '<%= asset_path 'Background.png' %>');
         game.load.image('ground',  '<%= asset_path 'platform.png' %>');
+        game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
+        game.load.image('round',  '<%= asset_path 'green_ball.png' %>');
         game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
         game.load.image('star', '<%= asset_path 'star.png' %>');
         game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
         game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
         game.load.image('car', '<%= asset_path 'car.png' %>');
+        game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
         game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
         game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143)
 
@@ -32,11 +37,16 @@
     var platforms;
     var cursors;
 
+    var speed = 0;
+    var directionSpeed;
     var dudes;
     var startButton;
     var start;
     var score = 0;
     var scoreText;
+    var nitroText;
+    var nitroLeft = 10;
+    var nitro;
     var dudes;
     var diamonds;
     var stops;
@@ -45,11 +55,17 @@
     var checkPoint;
     var stars;
     var Popup;
-    var style = { font: "32px Arial", fill: "#ff0000", wordWrap: true, wordWrapWidth: popup.width, align: "center" };
+    var questionText;
+    var answer1Text;
+    var answer2Text;
+    var answer3Text;
+    var answer4Text;
+    var normalStyle; 
+    var hoverStyle;
 
     function IntroCreate(){
-        start = false;
-        startButton = game.add.button(100,100,'button-start',IntroDestroy,this,1,0,2);
+      start = false;
+      startButton = game.add.button(100,100,'button-start',IntroDestroy,this,1,0,2);
     }
 
     function IntroDestroy(){
@@ -63,7 +79,7 @@
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    game.add.sprite(0, 0, 'sky');
+    game.add.sprite(0, 0, 'Street');
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = game.add.group();
@@ -72,7 +88,7 @@
     platforms.enableBody = true;
 
     // Here we create the ground.
-    var ground = platforms.create(0, game.world.height - 64, 'ground');
+    var ground = platforms.create(0, game.world.height - 23, 'ground');
 
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
     ground.scale.setTo(2, 2);
@@ -82,32 +98,65 @@
 
 
     //  Now let's create two ledges
-    var ledge = platforms.create(650, 0, 'ground');
+    var ledge = platforms.create(775, 0, 'ground');
     ledge.scale.setTo(5,25);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(-150, 0, 'ground');
-    ledge.scale.setTo(0.6,25);
-    ledge.body.immovable = true;
-
-    ledge = platforms.create(-150, 0, 'ground');
+    ledge = platforms.create(0, 0, 'ground');
     ledge.scale.setTo(2,2);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(-150, 0, 'ground');
-    ledge.scale.setTo(2,2);
+    ledge = platforms.create(0, 0, 'ground');
+    ledge.scale.setTo(0.05,22);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(230, 0, 'ground');
-    ledge.scale.setTo(0.7,8);
+    ledge = platforms.create(90, 140, 'ground');
+    ledge.scale.setTo(0.4,4);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(230, game.world.height - 250, 'ground');
-    ledge.scale.setTo(0.7,8);
+
+    ledge = platforms.create(90, 360, 'ground');
+    ledge.scale.setTo(0.4,4);
     ledge.body.immovable = true;
 
-    //  The score
-    scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+    ledge = platforms.create(370, 140, 'ground');
+    ledge.scale.setTo(0.4,4);
+    ledge.body.immovable = true;
+
+
+    ledge = platforms.create(370, 360, 'ground');
+    ledge.scale.setTo(0.4,4);
+    ledge.body.immovable = true;
+
+
+    ledge = platforms.create(690, 140, 'ground');
+    ledge.scale.setTo(0.4,4);
+    ledge.body.immovable = true;
+
+
+    ledge = platforms.create(690, 360, 'ground');
+    ledge.scale.setTo(0.4,4);
+    ledge.body.immovable = true;
+
+
+    ledge = platforms.create(585, 285, 'round');
+    ledge.scale.setTo(1,1);
+    ledge.body.immovable = true;
+
+    //Bar image
+    ledge = platforms.create(0, 0, 'Bar');
+    ledge.scale.setTo(1,0.35);
+    ledge.body.immovable = true;
+
+
+    // The score
+    scoreText = game.add.bitmapText(10, 0, 'desyrel', 'Score: 0', 33);
+    // game.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#FFFFFF',  });
+
+    // Nitrous
+    nitroText = game.add.bitmapText(550, 0, 'desyrel', 'Nitro: 60', 33);
+    // game.add.text(420, 5, 'Nitro: 60', { fontSize: '32px', fill: '#FFFFFF',  });
+
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
@@ -134,15 +183,16 @@
     stops = game.add.group();
 
     stops.enableBody = true;
-    stops.create(130,100,'bubble');
-    stops.create(130,430,'bubble');
-    stops.create(550,430,'bubble');
-    stops.create(550,100,'bubble');
+    stops.create(30,70,'bubble');
+    stops.create(30,510,'bubble');
+    stops.create(700,70,'bubble');
+    stops.create(700,510,'bubble');
+    stops.create(700,280,'bubble');
     stops.sort();
     createDude();
 
     // The car and its settings
-    car = game.add.sprite(140, game.world.height - 250, 'car');
+    car = game.add.sprite(40, game.world.height - 250, 'car');
     car.scale.setTo(0.1,0.1);
     //  We need to enable physics on the car
     game.physics.arcade.enable(car);
@@ -185,128 +235,109 @@ function update() {
     var reverse = false;
     car.angle -= 90;
 
-    if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
-    {
-        game.physics.arcade.velocityFromAngle(car.angle, 250, car.body.velocity);
-        move = true;
+    directionSpeed = 200;
+    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && nitroLeft > 0){
+        nitro = true;
+    }else{
+        nitro = false;
     }
 
-    if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+    if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
     {
-        game.physics.arcade.velocityFromAngle(car.angle, -250, car.body.velocity);
+        if(speed < 450)
+            speed+=5;
+        if(nitro && speed < 600)
+            speed+=10
+        move = true;
+    }else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+    {
+        if(speed > -200)
+            speed-=5;
+        if(speed > 0)
+            speed -=10
         reverse = true;
+    }else{
+        if(speed > 0)
+            speed -=10
+        if(speed < 0)
+            speed +=5
     }
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
         if(move){
-            car.body.angularVelocity = -150;
+            car.body.angularVelocity = -directionSpeed;
         }else if(reverse){
-            car.body.angularVelocity = +150;
+            car.body.angularVelocity = +directionSpeed;
         }
     }
     else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) )
     {
         if(move){
-            car.body.angularVelocity = +150;
+            car.body.angularVelocity = +directionSpeed;
         }else if(reverse){
-            car.body.angularVelocity = -150;
+            car.body.angularVelocity = -directionSpeed;
         }    
     }
 
+    game.physics.arcade.velocityFromAngle(car.angle, speed, car.body.velocity);
+    
+
     car.angle += 90;
 
-    /*
-    //  Reset the cars velocity (movement)
-    car.body.velocity.x = 0;
-
-    if (cursors.left.isDown)
-    {
-        //  Move to the left
-        car.body.velocity.x = -150;
-        if(car.angle != -90)
-            car.angle -= 0;
-        car.animations.play('left');
-    }
-    else if (cursors.right.isDown)
-    {
-        //  Move to the right
-        car.body.velocity.x = 150;
-        if(car.angle != 90)
-             car.angle +=0;
-        car.animations.play('right');
-    }
-    else if (cursors.up.isDown)
-    {
-        car.body.velocity.y = -100;
-    }
-    else if (cursors.down.isDown)
-    {
-        car.body.velocity.y = +100;
-    }
-    else
-    {
-        //  Stand still
-        car.animations.stop();
-        car.body.velocity.y = 0;
-
-        car.frame = 4;
-    }
-    
-    //  Allow the car to jump if they are touching the ground.
-
-    */
 }
 
 function createPopup(){
-    Popup = game.add.sprite(game.world.centerX, game.world.centerY, 'ground');
+    Popup = game.add.sprite(game.world.centerX, game.world.centerY+30, 'popup');
     Popup.alpha = 0.8;
     Popup.anchor.set(0.5);
     Popup.inputEnabled = true;
-    Popup.input.enableDrag();
-
-
-    //  Position the close button to the top-right of the Popup sprite (minus 8px for spacing)
-    var pw = (Popup.width ) - 22;
-    var ph = (Popup.height ) - 22;
+    normalStyle = { font: "32px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    hoverStyle = { font: "36px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    //Popup.input.enableDrag();
 
     //  And click the close button to close it down again
-    Popup.scale.setTo(0.8,8);
-    var closeButton = game.make.sprite(((Popup.width / 2 - 80)/ 0.8), ((Popup.height / 2 - 70) / 8), 'bubble');
-    closeButton.inputEnabled = true;
-    closeButton.input.priorityID = 1;
-    closeButton.input.useHandCursor = true;
-    closeButton.events.onInputDown.add(hidePopup, this);
+    Popup.scale.setTo(1.5,1.1);
+    answer1Text = game.add.text(-220, -50, "Answer 1", normalStyle);
+    answer1Text.inputEnabled = true;
+    answer1Text.events.onInputDown.add(hidePopup, this);
+    answer1Text.input.priorityID = 1;
+    answer1Text.input.useHandCursor = true;
+    answer1Text.events.onInputOver.add(AnswerHoverIn, this);
+    answer1Text.events.onInputOut.add(AnswerHoverOut, this);
+    Popup.addChild(answer1Text);
 
-    Popup.addChild(closeButton);
-    closeButton.scale.setTo(1/0.8,1/8);
-    var text = game.add.text(20, 10, "2", style);
-    closeButton.addChild(text);
+    answer1Text = game.add.text(-220, +50, "Answer 2", normalStyle);
+    answer1Text.inputEnabled = true;
+    answer1Text.events.onInputDown.add(hidePopup, this);
+    answer1Text.input.priorityID = 1;
+    answer1Text.input.useHandCursor = true;
+    answer1Text.events.onInputOver.add(AnswerHoverIn, this);
+    answer1Text.events.onInputOut.add(AnswerHoverOut, this);
+    Popup.addChild(answer1Text);
 
-    closeButton = game.make.sprite(((Popup.width / 2 - 300)/ 0.8), ((Popup.height / 2 - 70) / 8), 'bubble');
-    closeButton.inputEnabled = true;
-    closeButton.input.priorityID = 1;
-    closeButton.input.useHandCursor = true;
-    closeButton.events.onInputDown.add(hidePopup, this);
 
-    Popup.addChild(closeButton);
-    closeButton.scale.setTo(1/0.8,1/8);
-    var text = game.add.text(20, 10, "1", style);
-    closeButton.addChild(text);
-
-    text = game.add.text(0, 0, " Question " + '', style);
+    var text = game.add.bitmapText(0, -200, 'desyrel', 'Question', 33);
+    //game.add.text(0, -200, " Question " + '', style);
     text.anchor.set(0.5);
     Popup.addChild(text);
-    text.scale.setTo(1/0.8,1/8);
 
     Popup.visible = false;
     // lawlalwl
 }
 
+function AnswerHoverIn(answer){
+    answer.setStyle(hoverStyle)
+}
+
+function AnswerHoverOut(answer){
+    answer.setStyle(normalStyle)
+}
+
 function collectDude (car, star) {
     dudes.getChildAt(0).destroy();
     createDiamond();
-    createStar();
+    //createStar();
     startTimer();
 }
 
@@ -314,12 +345,19 @@ function hidePopup(){
     Popup.visible = false;
 }
 
+function updateNitro(){
+    if(nitro){
+        nitroLeft -= 1;
+        nitroText.text = 'Nitro: '+ nitroLeft
+    }
+}
 
 function collectDiamond (car, star){
     diamonds.getChildAt(0).destroy();
     if(stars.countLiving() != 0)
         stars.getChildAt(0).destroy();
     createDude();
+    Popup.visible = true;
     score += 10*time;
     scoreText.text = 'Score: ' + score;
     time = 0;
@@ -328,16 +366,16 @@ function collectDiamond (car, star){
 
 var random;
 function createDude(){
-    random = parseInt(Math.random()*4);
+    random = parseInt(Math.random()*5);
     var child;
     child = stops.getChildAt(random);
     dudes.create(child.x+15,child.y+5,'dude');
 }
 
 function createDiamond(){
-    var newRandom = parseInt(Math.random()*4);
+    var newRandom = parseInt(Math.random()*5);
     while(random == newRandom){
-        newRandom = parseInt(Math.random()*4);;
+        newRandom = parseInt(Math.random()*5);;
     }
     var child;
     child = stops.getChildAt(newRandom);
@@ -346,15 +384,17 @@ function createDiamond(){
 
 function createStar(){
     stars.create(game.world.width/2 - 30,270,'star');
+    stars.create(game.world.width/2 - 30,111,'star');
 }
 
-function collectStar(){
-    stars.getChildAt(0).destroy();
+function collectStar(car,star){
+    star.destroy()
     Popup.visible = true;
 }
 
 function startTimer(){
-    timerText = game.add.text(260, 16, '', { fontSize: '32px', fill: '#000' });
+    timerText = game.add.bitmapText(250, 0, 'desyrel', '', 33);
+    //game.add.text(260, 16, '', { fontSize: '32px', fill: '#000' });
     time = 40;
     updateTimer();
 }
