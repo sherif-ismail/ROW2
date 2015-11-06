@@ -13,24 +13,8 @@
 <body>
 
     <script type="text/javascript">
-    //setTimeout(testChange,26000);
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: IntroPreload, create: IntroCreate, update:IntroUpdate});
-    function testChange(){
-        alert();
-        game.destroy();
-        game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-    }
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-    function IntroPreload(){
-        game.load.image('button', '<%= asset_path 'ti.png' %>');
-    }
-    function IntroCreate(){
-        var button1 = game.add.sprite(0, 0, 'button');
-        button1.scale.setTo(0.5,0.5);
-    }
-    function IntroUpdate(){
-
-    }
     function preload() {
         game.load.image('sky', '<%= asset_path 'sky.png' %>');
         game.load.image('ground',  '<%= asset_path 'platform.png' %>');
@@ -296,7 +280,7 @@ function createPopup(){
     var text = game.add.text(20, 10, "1", style);
     closeButton.addChild(text);
 
-    text = game.add.text(0, 0, " Question " , style);
+    text = game.add.text(0, 0, " Question " + '<%= @questions[0].body %>', style);
     text.anchor.set(0.5);
     Popup.addChild(text);
     text.scale.setTo(1/0.8,1/8);

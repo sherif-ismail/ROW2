@@ -9,6 +9,7 @@ class UsersController < ApplicationController
   end
 
   def create
+    #return
   	@user = User.new(user_params)
   	if @user.save
       log_in @user
