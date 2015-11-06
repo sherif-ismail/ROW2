@@ -19,9 +19,10 @@
         game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
         game.load.bitmapFont('stack', '<%= asset_path 'shortStack.png' %>', '<%= asset_path 'shortStack.xml' %>');
         game.load.image('Street', '<%= asset_path 'Background.png' %>');
+        game.load.image('background', '<%= asset_path 'start_Background.png' %>');
         game.load.image('ground',  '<%= asset_path 'platform.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
-        game.load.image('round',  '<%= asset_path 'green_ball.png' %>');
+        game.load.image('round',  '<%= asset_path 'round.png' %>');
         game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
         game.load.image('star', '<%= asset_path 'star.png' %>');
         game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
@@ -35,6 +36,7 @@
     var car;
     var platforms;
     var cursors;
+    var startBackground;
     var speed = 0;
     var directionSpeed;
     var dudes;
@@ -68,7 +70,10 @@
 
     function IntroCreate(){
       start = false;
-      startButton = game.add.button(100,100,'button-start',IntroDestroy,this,1,0,2);
+      startBackground = game.add.sprite(0,0,'background');
+      startButton = game.add.button(200,450,'button-start',IntroDestroy,this,1,0,2);
+      game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
+      game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
     }
 
     function IntroDestroy(){
@@ -113,37 +118,37 @@
     ledge.scale.setTo(0.05,22);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(90, 140, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(120, 150, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(90, 360, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(120, 370, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(370, 140, 'ground');
-    ledge.scale.setTo(0.4,4);
-    ledge.body.immovable = true;
-
-
-    ledge = platforms.create(370, 360, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(380, 150, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(690, 140, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(380, 370, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(690, 360, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(690, 150, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(585, 285, 'round');
-    ledge.scale.setTo(1,1);
+    ledge = platforms.create(690, 370, 'ground');
+    ledge.scale.setTo(0.3,3.5);
+    ledge.body.immovable = true;
+
+
+    ledge = platforms.create(570, 290, 'round');
+    ledge.scale.setTo(0.1,0.1);
     ledge.body.immovable = true;
 
     //Bar image
@@ -425,7 +430,8 @@ function collectDiamond (car, star){
     diamonds.getChildAt(0).destroy();
     if(stars.countLiving() != 0)
         stars.getChildAt(0).destroy();
-    Popup.visible = true;
+    if(time > 0)
+        Popup.visible = true;
     score += 10*time;
     scoreText.text = 'Score: ' + score;
     //time = 0;
