@@ -23,6 +23,7 @@
         game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
         game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
         game.load.image('car', '<%= asset_path 'car.png' %>');
+        game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
         game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
 
     }
@@ -93,6 +94,8 @@
     ledge = platforms.create(230, game.world.height - 250, 'ground');
     ledge.scale.setTo(0.7,8);
     ledge.body.immovable = true;
+
+    game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
 
     //  The score
     scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
