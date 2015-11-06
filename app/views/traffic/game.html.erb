@@ -11,18 +11,18 @@
     </style>
 </head>
 <body>
-
+<%= srand(Time.now.to_i) %>
     <script type="text/javascript">
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
-    setInterval(updateNitro,100)
 
     function preload() {
         game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
         game.load.bitmapFont('stack', '<%= asset_path 'shortStack.png' %>', '<%= asset_path 'shortStack.xml' %>');
         game.load.image('Street', '<%= asset_path 'Background.png' %>');
+        game.load.image('background', '<%= asset_path 'start_Background.png' %>');
         game.load.image('ground',  '<%= asset_path 'platform.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
-        game.load.image('round',  '<%= asset_path 'green_ball.png' %>');
+        game.load.image('round',  '<%= asset_path 'round.png' %>');
         game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
         game.load.image('star', '<%= asset_path 'star.png' %>');
         game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
@@ -33,11 +33,10 @@
         game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143)
 
     }
-
     var car;
     var platforms;
     var cursors;
-
+    var startBackground;
     var speed = 0;
     var directionSpeed;
     var dudes;
@@ -56,17 +55,25 @@
     var time;
     var stars;
     var Popup;
+    var allQuestions = <%= raw @questions.to_json %>;
+    var allAnswers = <%= raw @answers.to_json %>;
+    var allCategories = <%= raw @categories.to_json %>;
+    var orderOfQuestions = <%= raw (0..@answers.length-1).to_a.shuffle %>;
+    var currentQuestion = 0;
+    var correctAnswer;
     var questionText;
-    var answer1Text;
-    var answer2Text;
-    var answer3Text;
-    var answer4Text;
+    var blockAnswer;
+    var answerText = [];
     var normalStyle; 
     var hoverStyle;
+    var correctStyle;
 
     function IntroCreate(){
       start = false;
-      startButton = game.add.button(100,100,'button-start',IntroDestroy,this,1,0,2);
+      startBackground = game.add.sprite(0,0,'background');
+      startButton = game.add.button(200,450,'button-start',IntroDestroy,this,1,0,2);
+      game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
+      game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
     }
 
     function IntroDestroy(){
@@ -111,37 +118,37 @@
     ledge.scale.setTo(0.05,22);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(90, 140, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(120, 150, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(90, 360, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(120, 370, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
-    ledge = platforms.create(370, 140, 'ground');
-    ledge.scale.setTo(0.4,4);
-    ledge.body.immovable = true;
-
-
-    ledge = platforms.create(370, 360, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(380, 150, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(690, 140, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(380, 370, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(690, 360, 'ground');
-    ledge.scale.setTo(0.4,4);
+    ledge = platforms.create(690, 150, 'ground');
+    ledge.scale.setTo(0.3,3.5);
     ledge.body.immovable = true;
 
 
-    ledge = platforms.create(585, 285, 'round');
-    ledge.scale.setTo(1,1);
+    ledge = platforms.create(690, 370, 'ground');
+    ledge.scale.setTo(0.3,3.5);
+    ledge.body.immovable = true;
+
+
+    ledge = platforms.create(570, 290, 'round');
+    ledge.scale.setTo(0.1,0.1);
     ledge.body.immovable = true;
 
     //Bar image
@@ -210,16 +217,15 @@
 
     start = true;
 
+    setInterval(updateNitro,100)
+
 }
 
 function update() {
 
-    if(!start){
-         return;
-    }
 
-
-
+    if(!start)
+        return;
     //  Collide the car and the stars with the platforms
     game.physics.arcade.collide(car, platforms);
     game.physics.arcade.collide(dudes, platforms);
@@ -238,20 +244,21 @@ function update() {
 
     directionSpeed = 200;
 
-    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && nitroLeft > 0 && game.input.keyboard.isDown(Phaser.Keyboard.UP)){
+
+    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && nitroLeft > 0 && game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false){
         nitro = true;
     }else{
         nitro = false;
     }
 
-    if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
+    if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false)
     {
         if(speed < 450)
             speed+=5;
         if(nitro && speed < 600)
             speed+=10
         move = true;
-    }else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+    }else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN) && Popup.visible == false)
     {
         if(speed > -200)
             speed-=5;
@@ -265,7 +272,7 @@ function update() {
             speed +=5
     }
 
-    if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+    if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
     {
         if(move){
             car.body.angularVelocity = -directionSpeed;
@@ -273,7 +280,7 @@ function update() {
             car.body.angularVelocity = +directionSpeed;
         }
     }
-    else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) )
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && Popup.visible == false)
     {
         if(move){
             car.body.angularVelocity = +directionSpeed;
@@ -295,48 +302,49 @@ function createPopup(){
     Popup.anchor.set(0.5);
     Popup.inputEnabled = true;
     normalStyle = { font: "32px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    hoverStyle = { font: "38px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    hoverStyle = { font: "36px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    correctStyle = { font: "38px Arial", fill: "#458B00", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
     //Popup.input.enableDrag();
 
     //  And click the close button to close it down again
     Popup.scale.setTo(1.5,1.1);
-    answer1Text = game.add.text(-220, -50, "Answer 1", normalStyle);
-    answer1Text.inputEnabled = true;
-    answer1Text.events.onInputDown.add(GiveAnswer, this);
-    answer1Text.input.priorityID = 1;
-    answer1Text.input.useHandCursor = true;
-    answer1Text.events.onInputOver.add(AnswerHoverIn, this);
-    answer1Text.events.onInputOut.add(AnswerHoverOut, this);
-    Popup.addChild(answer1Text);
+    answerText[0] = game.add.text(-220, -50, "Answer 1", normalStyle);
+    answerText[0].inputEnabled = true;
+    answerText[0].events.onInputDown.add(GiveAnswer, this);
+    answerText[0].input.priorityID = 1;
+    answerText[0].input.useHandCursor = true;
+    answerText[0].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[0].events.onInputOut.add(AnswerHoverOut, this);
+    Popup.addChild(answerText[0]);
 
-    answer2Text = game.add.text(-220, +50, "Answer 2", normalStyle);
-    answer2Text.inputEnabled = true;
-    answer2Text.events.onInputDown.add(GiveAnswer, this);
-    answer2Text.input.priorityID = 1;
-    answer2Text.input.useHandCursor = true;
-    answer2Text.events.onInputOver.add(AnswerHoverIn, this);
-    answer2Text.events.onInputOut.add(AnswerHoverOut, this);
-    Popup.addChild(answer2Text);
+    answerText[1] = game.add.text(-220, +50, "Answer 2", normalStyle);
+    answerText[1].inputEnabled = true;
+    answerText[1].events.onInputDown.add(GiveAnswer, this);
+    answerText[1].input.priorityID = 1;
+    answerText[1].input.useHandCursor = true;
+    answerText[1].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[1].events.onInputOut.add(AnswerHoverOut, this);
+    Popup.addChild(answerText[1]);
 
-    answer3Text = game.add.text(0, -50, "Answer 3", normalStyle);
-    answer3Text.inputEnabled = true;
-    answer3Text.events.onInputDown.add(GiveAnswer, this);
-    answer3Text.input.priorityID = 1;
-    answer3Text.input.useHandCursor = true;
-    answer3Text.events.onInputOver.add(AnswerHoverIn, this);
-    answer3Text.events.onInputOut.add(AnswerHoverOut, this);
-    Popup.addChild(answer3Text);
+    answerText[2] = game.add.text(0, -50, "Answer 3", normalStyle);
+    answerText[2].inputEnabled = true;
+    answerText[2].events.onInputDown.add(GiveAnswer, this);
+    answerText[2].input.priorityID = 1;
+    answerText[2].input.useHandCursor = true;
+    answerText[2].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[2].events.onInputOut.add(AnswerHoverOut, this);
+    Popup.addChild(answerText[2]);
 
-    answer4Text = game.add.text(0, +50, "Answer 4", normalStyle);
-    answer4Text.inputEnabled = true;
-    answer4Text.events.onInputDown.add(GiveAnswer, this);
-    answer4Text.input.priorityID = 1;
-    answer4Text.input.useHandCursor = true;
-    answer4Text.events.onInputOver.add(AnswerHoverIn, this);
-    answer4Text.events.onInputOut.add(AnswerHoverOut, this);
-    Popup.addChild(answer4Text);
+    answerText[3] = game.add.text(0, +50, "Answer 4", normalStyle);
+    answerText[3].inputEnabled = true;
+    answerText[3].events.onInputDown.add(GiveAnswer, this);
+    answerText[3].input.priorityID = 1;
+    answerText[3].input.useHandCursor = true;
+    answerText[3].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[3].events.onInputOut.add(AnswerHoverOut, this);
+    Popup.addChild(answerText[3]);
 
-    questionText = game.add.bitmapText(0, -200, 'desyrel', 'Question', 33);
+    questionText = game.add.bitmapText(0, -200, 'desyrel', 'Question', 32);
     //game.add.text(0, -200, " Question " + '', style);
     questionText.anchor.set(0.5);
     Popup.addChild(questionText);
@@ -345,29 +353,56 @@ function createPopup(){
 }
 
 function NextQuestion(){
-    '<%= srand(Time.now.to_i) %>'
-    '<%= r = rand(0..@questions.length-1) %>'
-    alert('<%= r %> ')
-    questionText.text = '<%=  @questions[r].body %>'
-    answer1Text.text = '<%= @questions[r].choice1 %>'
-    '<%= r = rand(0..@signsAnswers.length-1) %>'
-    answer2Text.text = '<%= @signsAnswers[r] %>'
-    '<%= r = rand(0..@signsAnswers.length-1) %>'
-    answer3Text.text = '<%= @signsAnswers[r] %>'
-    '<%= r = rand(0..@signsAnswers.length-1) %>'
-    answer4Text.text = '<%= @signsAnswers[r] %>'
-
+    blockAnswer = false;
+    questionText.text = allQuestions[orderOfQuestions[currentQuestion]];
+    for(i = 0; i < 4; i ++){
+        answerText[i].text = '';
+        answerText[i].setStyle(normalStyle);
+    }
+    correctAnswer = parseInt(Math.random()*4);
+    answerText[correctAnswer].text = allAnswers[orderOfQuestions[currentQuestion]];
+    var r;
+    for(i = 0; i < 4; i++){
+        if(i != correctAnswer){
+            while(true){
+                r = parseInt(Math.random()*allAnswers.length);
+                var duplicate = false;
+                for(j = 0; j < 4; j++){
+                    if(allAnswers[r] == answerText[j].text || allCategories[r] != allCategories[correctAnswer])
+                        duplicate = true;
+                }
+                if(!duplicate)
+                    break;
+            }
+            answerText[i].text = allAnswers[r];
+        }
+    }
+    currentQuestion++;
+    if(currentQuestion >= allQuestions.length)
+        currentQuestion = 0;
 }
 
-function GiveAnswer(){
-    NextQuestion();
+function GiveAnswer(answer){
+    if(blockAnswer)
+        return;
+    blockAnswer = true;
+    var old = score;
+    if(answer.text == allAnswers[orderOfQuestions[currentQuestion-1]])
+        score += 100;
+    answerText[correctAnswer].setStyle(correctStyle);
+    scoreText.text = 'Score: ' + score;
+    setTimeout(NextQuestion,2000-(10*(score-old)))
 }
 
 function AnswerHoverIn(answer){
+    if(blockAnswer)
+        return;
     answer.setStyle(hoverStyle)
 }
 
 function AnswerHoverOut(answer){
+    if(blockAnswer)
+        return;
     answer.setStyle(normalStyle)
 }
 
@@ -395,7 +430,8 @@ function collectDiamond (car, star){
     diamonds.getChildAt(0).destroy();
     if(stars.countLiving() != 0)
         stars.getChildAt(0).destroy();
-    Popup.visible = true;
+    if(time > 0)
+        Popup.visible = true;
     score += 10*time;
     scoreText.text = 'Score: ' + score;
     //time = 0;
