@@ -8,14 +8,15 @@ class TrafficController < ApplicationController
       flash[:danger] = "Please log in."
       redirect_to login_url
     end
-    @questions = get_all_questions
-    category = Array.new
-    for q in @questions
-    	if(q.category == 'Signs')
-    		category << q.choice1
-    	end
+    allQuestions = get_all_questions
+    @categories = Array.new
+    @answers = Array.new
+    @questions = Array.new
+    for q in allQuestions
+    	@answers << q.choice1
+      @categories << q.category
+      @questions << q.body
     end
-    @signsAnswers = category
   end
 
 
