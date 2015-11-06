@@ -280,7 +280,7 @@ function createPopup(){
     var text = game.add.text(20, 10, "1", style);
     closeButton.addChild(text);
 
-    text = game.add.text(0, 0, " Question " + '<%= @questions[0].body %>', style);
+    text = game.add.text(0, 0, " Question " , style);
     text.anchor.set(0.5);
     Popup.addChild(text);
     text.scale.setTo(1/0.8,1/8);
