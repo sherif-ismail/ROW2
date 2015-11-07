@@ -6,5 +6,12 @@
   </h2>
 
   <%= link_to "RoW Game", game_path, class: "btn btn-lg btn-primary" %>
+<% if is_admin? %>
+  <%= form_tag importData_path, multipart: true do %>
+  <%= file_field_tag :file, class: "btn btn-lg btn-primary" %>
+  <%= submit_tag "Import CSV", class: "btn btn-lg btn-primary" %>
+<% end %>
+<% end %>
+
 </div>
 
