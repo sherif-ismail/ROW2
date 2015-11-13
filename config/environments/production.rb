@@ -23,7 +23,7 @@ Rails.application.configure do
     :authentication => :plain,
     :user_name      => ENV['sherif.ismail318'],
     :password       => ENV['1234emailheroku'],
-    :domain         => 'heroku.com',
+    :domain         => 'gmail.com',
     :enable_starttls_auto => true
   }
   # Enable Rack::Cache to put a simple HTTP cache in front of your application
