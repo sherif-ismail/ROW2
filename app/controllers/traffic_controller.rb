@@ -1,6 +1,9 @@
 class TrafficController < ApplicationController
 
   def index
+    if(logged_in?)
+      redirect_to current_user
+    end
   end
 
   def game
@@ -12,10 +15,12 @@ class TrafficController < ApplicationController
     @categories = Array.new
     @answers = Array.new
     @questions = Array.new
+    @images = Array.new
     for q in allQuestions
     	@answers << q.choice1
       @categories << q.category
       @questions << q.body
+      @images << q.path
     end
   end
 

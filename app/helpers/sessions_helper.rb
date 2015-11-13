@@ -15,6 +15,10 @@ module SessionsHelper
     !current_user.nil?
   end
 
+  def is_admin?
+    current_user.email == 'admin@admin.com'
+  end
+
   # Logs out the current user.
   def log_out
     session.delete(:user_id)

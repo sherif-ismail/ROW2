@@ -11,27 +11,9 @@
     </style>
 </head>
 <body>
-<%= srand(Time.now.to_i) %>
     <script type="text/javascript">
+    <%= srand(Time.now.to_i) %>
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
-
-    function preload() {
-        game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
-        game.load.image('Street', '<%= asset_path 'Background.png' %>');
-        game.load.image('background', '<%= asset_path 'start_Background.png' %>');
-        game.load.image('ground',  '<%= asset_path 'platform.png' %>');
-        game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
-        game.load.image('round',  '<%= asset_path 'round.png' %>');
-        game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
-        game.load.image('star', '<%= asset_path 'star.png' %>');
-        game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
-        game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
-        game.load.image('car', '<%= asset_path 'car.png' %>');
-        game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
-        game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
-        game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143)
-
-    }
     var car;
     var platforms;
     var cursors;
@@ -44,11 +26,13 @@
     var score = 0;
     var scoreText;
     var nitroText;
+    var speedText;
     var msgText;
     var nitroLeft = 100;
     var nitro;
     var dudes;
     var diamonds;
+    var collected = true;
     var stops;
     var timerText;
     var time;
@@ -58,6 +42,8 @@
     var allAnswers = <%= raw @answers.to_json %>;
     var allCategories = <%= raw @categories.to_json %>;
     var orderOfQuestions = <%= raw (0..@answers.length-1).to_a.shuffle %>;
+    var images = <%= raw @images.to_json %>
+    var currentImage;
     var currentQuestion = 0;
     var correctAnswer;
     var questionText;
@@ -66,6 +52,28 @@
     var normalStyle; 
     var hoverStyle;
     var correctStyle;
+    var wrongStyle;
+
+    function preload() {
+        game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
+        game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
+        game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143)
+        game.load.image('Street', '<%= asset_path 'Background.png' %>');
+        game.load.image('background', '<%= asset_path 'start_Background.png' %>');
+        game.load.image('ground',  '<%= asset_path 'platform.png' %>');
+        game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
+        game.load.image('round',  '<%= asset_path 'round.png' %>');
+        game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
+        game.load.image('star', '<%= asset_path 'star.png' %>');
+        game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
+        game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
+        game.load.image('car', '<%= asset_path 'car.png' %>');
+        game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
+        <% for x in @images %>
+        game.load.image('<%= x %>','<%= asset_path x %>');
+        <% end %>
+
+    }
 
     function IntroCreate(){
       start = false;
@@ -75,7 +83,7 @@
       game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
     }
 
-    function IntroDestroy(){
+    function IntroDestroy(){     
         startButton.destroy();
         create();
     }
@@ -102,7 +110,6 @@
 
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
-
 
     //  Now let's create two ledges
     var ledge = platforms.create(775, 0, 'ground');
@@ -156,6 +163,7 @@
     ledge.body.immovable = true;
 
 
+    speedText = game.add.bitmapText(350, 0, 'desyrel', 'Speed: 0', 32);
     // The score
     scoreText = game.add.bitmapText(10, 0, 'desyrel', 'Score: 0', 32);
     // game.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#FFFFFF',  });
@@ -163,7 +171,8 @@
     // Nitrous
     nitroText = game.add.bitmapText(635, 0, 'desyrel', 'Nitro: Full', 32);
     // game.add.text(420, 5, 'Nitro: 60', { fontSize: '32px', fill: '#FFFFFF',  });
-    msgText = game.add.bitmapText(430, 0, 'desyrel', 'Go Crazy!!', 34);
+    msgText = game.add.bitmapText(530, 0, 'desyrel', 'Go!!', 34);
+
     msgText.visible = false;
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
@@ -201,6 +210,7 @@
     // The car and its settings
     car = game.add.sprite(40, game.world.height - 250, 'car');
     car.scale.setTo(0.1,0.1);
+
     //  We need to enable physics on the car
     game.physics.arcade.enable(car);
 
@@ -217,14 +227,13 @@
     start = true;
 
     setInterval(updateNitro,100)
-
+    setInterval(updateSpeed,100)
 }
 
 function update() {
-
-
     if(!start)
         return;
+
     //  Collide the car and the stars with the platforms
     game.physics.arcade.collide(car, platforms);
     game.physics.arcade.collide(dudes, platforms);
@@ -239,10 +248,9 @@ function update() {
     car.body.angularVelocity = 0;
     var move = false;
     var reverse = false;
-    car.angle -= 90;
+    //car.angle -= 90;
 
     directionSpeed = 200;
-
 
     if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && nitroLeft > 0 && game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false){
         nitro = true;
@@ -253,46 +261,44 @@ function update() {
     if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false)
     {
         if(speed < 450)
-            speed+=5;
-        if(nitro && speed < 600)
-            speed+=10
+            speed += 5;
+        if(nitro && speed < 650)
+            speed += 5
         move = true;
     }else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN) && Popup.visible == false)
     {
         if(speed > -200)
-            speed-=5;
+            speed -= 5;
         if(speed > 0)
-            speed -=10
+            speed -= 5
         reverse = true;
     }else{
         if(speed > 0)
-            speed -=10
+            speed -= 10
         if(speed < 0)
-            speed +=5
+            speed += 5
     }
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
     {
         if(move){
-            car.body.angularVelocity = -directionSpeed;
+            car.body.angularVelocity = -directionSpeed ;
         }else if(reverse){
-            car.body.angularVelocity = +directionSpeed;
+            car.body.angularVelocity = +directionSpeed ;
         }
     }
     else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && Popup.visible == false)
     {
         if(move){
-            car.body.angularVelocity = +directionSpeed;
+            car.body.angularVelocity = +directionSpeed ;
         }else if(reverse){
-            car.body.angularVelocity = -directionSpeed;
+            car.body.angularVelocity = -directionSpeed ;
         }    
     }
 
-    game.physics.arcade.velocityFromAngle(car.angle, speed, car.body.velocity);
-    
+    game.physics.arcade.velocityFromAngle(car.angle-90, speed, car.body.velocity);  
 
-    car.angle += 90;
-
+    //car.angle += 90;
 }
 
 function createPopup(){
@@ -300,14 +306,15 @@ function createPopup(){
     Popup.alpha = 0.8;
     Popup.anchor.set(0.5);
     Popup.inputEnabled = true;
-    normalStyle = { font: "32px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    hoverStyle = { font: "36px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    correctStyle = { font: "38px Arial", fill: "#458B00", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    normalStyle = { font: "28px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    hoverStyle = { font: "30px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    wrongStyle = { font: "30px Arial", fill: "#b20000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    correctStyle = { font: "32px Arial", fill: "#458B00", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
     //Popup.input.enableDrag();
 
     //  And click the close button to close it down again
     Popup.scale.setTo(1.5,1.1);
-    answerText[0] = game.add.text(-220, -50, "Answer 1", normalStyle);
+    answerText[0] = game.add.text(-240, +50, "Answer 1", normalStyle);
     answerText[0].inputEnabled = true;
     answerText[0].events.onInputDown.add(GiveAnswer, this);
     answerText[0].input.priorityID = 1;
@@ -316,7 +323,7 @@ function createPopup(){
     answerText[0].events.onInputOut.add(AnswerHoverOut, this);
     Popup.addChild(answerText[0]);
 
-    answerText[1] = game.add.text(-220, +50, "Answer 2", normalStyle);
+    answerText[1] = game.add.text(-240, +150, "Answer 2", normalStyle);
     answerText[1].inputEnabled = true;
     answerText[1].events.onInputDown.add(GiveAnswer, this);
     answerText[1].input.priorityID = 1;
@@ -325,7 +332,7 @@ function createPopup(){
     answerText[1].events.onInputOut.add(AnswerHoverOut, this);
     Popup.addChild(answerText[1]);
 
-    answerText[2] = game.add.text(0, -50, "Answer 3", normalStyle);
+    answerText[2] = game.add.text(0, +50, "Answer 3", normalStyle);
     answerText[2].inputEnabled = true;
     answerText[2].events.onInputDown.add(GiveAnswer, this);
     answerText[2].input.priorityID = 1;
@@ -334,7 +341,7 @@ function createPopup(){
     answerText[2].events.onInputOut.add(AnswerHoverOut, this);
     Popup.addChild(answerText[2]);
 
-    answerText[3] = game.add.text(0, +50, "Answer 4", normalStyle);
+    answerText[3] = game.add.text(0, +150, "Answer 4", normalStyle);
     answerText[3].inputEnabled = true;
     answerText[3].events.onInputDown.add(GiveAnswer, this);
     answerText[3].input.priorityID = 1;
@@ -343,11 +350,18 @@ function createPopup(){
     answerText[3].events.onInputOut.add(AnswerHoverOut, this);
     Popup.addChild(answerText[3]);
 
+    currentImage = game.add.sprite(0,0,'');
+
     questionText = game.add.bitmapText(0, -200, 'desyrel', 'Question', 32);
     //game.add.text(0, -200, " Question " + '', style);
     questionText.anchor.set(0.5);
     Popup.addChild(questionText);
     NextQuestion()
+    Popup.visible = false;
+}
+
+
+function hidePopup(){
     Popup.visible = false;
 }
 
@@ -358,6 +372,9 @@ function NextQuestion(){
         answerText[i].text = '';
         answerText[i].setStyle(normalStyle);
     }
+    currentImage.destroy();
+    currentImage = game.add.sprite(-50,-150,images[orderOfQuestions[currentQuestion]]);
+    Popup.addChild(currentImage);
     correctAnswer = parseInt(Math.random()*4);
     answerText[correctAnswer].text = allAnswers[orderOfQuestions[currentQuestion]];
     var r;
@@ -388,6 +405,7 @@ function GiveAnswer(answer){
     var old = score;
     if(answer.text == allAnswers[orderOfQuestions[currentQuestion-1]])
         score += 100;
+    answer.setStyle(wrongStyle);
     answerText[correctAnswer].setStyle(correctStyle);
     scoreText.text = 'Score: ' + score;
     setTimeout(NextQuestion,2000-(10*(score-old)))
@@ -405,17 +423,6 @@ function AnswerHoverOut(answer){
     answer.setStyle(normalStyle)
 }
 
-function collectDude (car, star) {
-    dudes.getChildAt(0).destroy();
-    createDiamond();
-    //createStar();
-    startTimer();
-}
-
-function hidePopup(){
-    Popup.visible = false;
-}
-
 function updateNitro(){
     msgText.visible = false;
     if(nitro){
@@ -423,6 +430,36 @@ function updateNitro(){
         nitroText.text = 'Nitro: '+ nitroLeft+'%'
         msgText.visible = true;
     }
+}
+
+var random;
+function createDude(){
+    if(time > 0)
+        return;
+    if(!collected)
+        return;
+    random = parseInt(Math.random()*5);
+    var child;
+    child = stops.getChildAt(random);
+    dudes.create(child.x+15,child.y+5,'dude',4);
+}
+
+function collectDude (car, star) {
+    dudes.getChildAt(0).destroy();
+    createDiamond();
+    //createStar();
+    startTimer();
+}
+
+function createDiamond(){
+    var newRandom = parseInt(Math.random()*5);
+    collected = false;
+    while(random == newRandom){
+        newRandom = parseInt(Math.random()*5);;
+    }
+    var child;
+    child = stops.getChildAt(newRandom);
+    diamonds.create(child.x+15 ,child.y+15,'diamond');
 }
 
 function collectDiamond (car, star){
@@ -433,26 +470,8 @@ function collectDiamond (car, star){
         Popup.visible = true;
     score += 10*time;
     scoreText.text = 'Score: ' + score;
-    //time = 0;
-    //timerText.text = '';
-}
-
-var random;
-function createDude(){
-    random = parseInt(Math.random()*5);
-    var child;
-    child = stops.getChildAt(random);
-    dudes.create(child.x+15,child.y+5,'dude',4);
-}
-
-function createDiamond(){
-    var newRandom = parseInt(Math.random()*5);
-    while(random == newRandom){
-        newRandom = parseInt(Math.random()*5);;
-    }
-    var child;
-    child = stops.getChildAt(newRandom);
-    diamonds.create(child.x+15 ,child.y+15,'diamond');
+    collected = true;
+    createDude();
 }
 
 function createStar(){
@@ -467,7 +486,6 @@ function collectStar(car,star){
 
 function startTimer(){
     timerText = game.add.bitmapText(180, 0, 'desyrel', '', 33);
-    //game.add.text(260, 16, '', { fontSize: '32px', fill: '#000' });
     time = 30;
     updateTimer();
 }
@@ -475,13 +493,17 @@ function startTimer(){
 function updateTimer(){
     if(time > 0){
         time -= 1;
-        timerText.text = 'Time Left: ' + time;
+        timerText.text = 'Time: ' + time;
         setTimeout(updateTimer,1000);
     }else{
         timerText.text = '';
         createDude();
         hidePopup();
     }
+}
+
+function updateSpeed(){
+    speedText.text = 'Speed: ' + speed;
 }
 
 </script>
