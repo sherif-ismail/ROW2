@@ -15,8 +15,8 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
-  host = 'https://stark-falls-6044.herokuapp.com.herokuapp.com'
-  config.action_mailer.default_url_options = { host: host }
+  #host = 'https://stark-falls-6044.herokuapp.com.herokuapp.com'
+  #config.action_mailer.default_url_options = { host: host }
   ActionMailer::Base.smtp_settings = {
     :address        => 'smtp.gmail.com',
     :port           => '587',
