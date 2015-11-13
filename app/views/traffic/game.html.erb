@@ -72,7 +72,6 @@
         <% for x in @images %>
         game.load.image('<%= x %>','<%= asset_path x %>');
         <% end %>
-
     }
 
     function IntroCreate(){
@@ -262,6 +261,8 @@ function update() {
     {
         if(speed < 450)
             speed += 5;
+        if(speed > 450 && !nitro)
+            speed -= 5
         if(nitro && speed < 650)
             speed += 5
         move = true;
