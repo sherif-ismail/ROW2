@@ -21,9 +21,8 @@ Rails.application.configure do
     :address        => 'smtp.gmail.com',
     :port           => '587',
     :authentication => :plain,
-    :user_name      => ENV['GMAIL_USER_NAME'],
-    :password       => ENV['GMAIL_PASSWORD'],
-    :domain         => 'heroku.com',
+    :user_name      => 'rowheroku@gmail.com',
+    :password       => '1234emailheroku',
     :enable_starttls_auto => true
   }
   # Enable Rack::Cache to put a simple HTTP cache in front of your application
