@@ -18,10 +18,10 @@ Rails.application.configure do
   #host = 'https://stark-falls-6044.herokuapp.com.herokuapp.com'
   #config.action_mailer.default_url_options = { host: host }
   ActionMailer::Base.smtp_settings = {
-    :address        => 'smtp.sendgrid.net',
+    :address        => 'smtp.gmail.com',
     :port           => '587',
     :authentication => :plain,
-    :user_name      => ENV['sherif.ismail318'],
+    :user_name      => ENV['rowheroku'],
     :password       => ENV['1234emailheroku'],
     :domain         => 'gmail.com',
     :enable_starttls_auto => true
