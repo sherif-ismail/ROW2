@@ -12,7 +12,8 @@ Rails.application.routes.draw do
   root 'traffic#index'
 
   post 'importData' => 'questions#importData'
-  
+  get 'deleteData' => 'questions#deleteData'
+
   get 'game' => 'traffic#game'
 
   get 'signup'  => 'users#new'

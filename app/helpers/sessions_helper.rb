@@ -16,7 +16,7 @@ module SessionsHelper
   end
 
   def is_admin?
-    current_user.email == 'admin@admin.com'
+    current_user.name == 'sherif.admin'
   end
 
   # Logs out the current user.
