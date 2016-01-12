@@ -13,9 +13,11 @@
 <body>
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
+    var game = new Phaser.Game(1000, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
     var car;
+    var bar;
     var platforms;
+    var lines;
     var cursors;
     var startBackground;
     var speed = 0;
@@ -59,24 +61,36 @@
         game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
         game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143)
         game.load.image('Street', '<%= asset_path 'Background.png' %>');
+        game.load.image('square', '<%= asset_path 'square.png' %>');
+        game.load.image('line', '<%= asset_path 'line.png' %>');
+        game.load.image('triangle', '<%= asset_path 'triangle.png' %>');
+        game.load.image('midan', '<%= asset_path 'midan.png' %>');
         game.load.image('background', '<%= asset_path 'start_Background.png' %>');
         game.load.image('ground',  '<%= asset_path 'platform.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
         game.load.image('round',  '<%= asset_path 'round.png' %>');
-        game.load.image('bubble', '<%= asset_path 'bubble.png' %>');
+        game.load.image('src_halo', '<%= asset_path 'dest1.png' %>');
         game.load.image('star', '<%= asset_path 'star.png' %>');
         game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
         game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
         game.load.image('car', '<%= asset_path 'car.png' %>');
         game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
-        <% for x in @images %>
-        game.load.image('<%= x %>','<%= asset_path x %>');
-        <% end %>
+        game.load.image('street_block', '<%= asset_path 'square-road.png' %>');
+        game.load.image('street_line', '<%= asset_path 'line-road.png' %>');
+        game.load.image('street_line_2', '<%= asset_path 'line-2-road.png' %>');
+        game.load.image('street_round', '<%= asset_path 'turn-road.png' %>');
+        game.load.image('street_round_2', '<%= asset_path 'round-road.png' %>');
+        game.load.image('street_turn', '<%= asset_path 'turn-2-road.png' %>');
+        game.load.image('asfalt', '<%= asset_path 'plain-road.png' %>');
+        //<% for x in @images %>
+        //game.load.image('<%= x %>','<%= asset_path x %>');
+        //<% end %>
     }
 
     function IntroCreate(){
       start = false;
       startBackground = game.add.sprite(0,0,'background');
+      //game.add.sprite(0,0,'test').scale.setTo(0.1,0.1)
       startButton = game.add.button(200,450,'button-start',IntroDestroy,this,1,0,2);
       game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
       game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
@@ -93,7 +107,12 @@
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    game.add.sprite(0, 0, 'Street');
+    var temp = game.add.sprite(0, 0, 'asfalt');
+    temp.scale.setTo(3.5,2);
+    temp.inputEnabled = true;
+    temp.events.onInputDown.add(getCord, this);
+    temp.input.priorityID = 1;
+    temp.input.useHandCursor = true;
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = game.add.group();
@@ -101,66 +120,8 @@
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;
 
-    // Here we create the ground.
-    var ground = platforms.create(0, game.world.height - 23, 'ground');
-
-    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    ground.scale.setTo(2, 2);
-
-    //  This stops it from falling away when you jump on it
-    ground.body.immovable = true;
-
-    //  Now let's create two ledges
-    var ledge = platforms.create(775, 0, 'ground');
-    ledge.scale.setTo(5,25);
-    ledge.body.immovable = true;
-
-    ledge = platforms.create(0, 0, 'ground');
-    ledge.scale.setTo(2,2);
-    ledge.body.immovable = true;
-
-    ledge = platforms.create(0, 0, 'ground');
-    ledge.scale.setTo(0.05,22);
-    ledge.body.immovable = true;
-
-    ledge = platforms.create(120, 150, 'ground');
-    ledge.scale.setTo(0.3,3.5);
-    ledge.body.immovable = true;
-
-
-    ledge = platforms.create(120, 370, 'ground');
-    ledge.scale.setTo(0.3,3.5);
-    ledge.body.immovable = true;
-
-    ledge = platforms.create(380, 150, 'ground');
-    ledge.scale.setTo(0.3,3.5);
-    ledge.body.immovable = true;
-
-
-    ledge = platforms.create(380, 370, 'ground');
-    ledge.scale.setTo(0.3,3.5);
-    ledge.body.immovable = true;
-
-
-    ledge = platforms.create(690, 150, 'ground');
-    ledge.scale.setTo(0.3,3.5);
-    ledge.body.immovable = true;
-
-
-    ledge = platforms.create(690, 370, 'ground');
-    ledge.scale.setTo(0.3,3.5);
-    ledge.body.immovable = true;
-
-
-    ledge = platforms.create(570, 290, 'round');
-    ledge.scale.setTo(0.1,0.1);
-    ledge.body.immovable = true;
-
-    //Bar image
-    ledge = platforms.create(0, 0, 'Bar');
-    ledge.scale.setTo(1,0.35);
-    ledge.body.immovable = true;
-
+    createStreets();
+    createAreas();
 
     speedText = game.add.bitmapText(350, 0, 'desyrel', 'Speed: 0', 32);
     // The score
@@ -198,17 +159,17 @@
     stops = game.add.group();
 
     stops.enableBody = true;
-    stops.create(30,70,'bubble');
-    stops.create(30,510,'bubble');
-    stops.create(700,70,'bubble');
-    stops.create(700,510,'bubble');
-    stops.create(700,280,'bubble');
+    //stops.create(30,70,'src_halo').scale.setTo(0.1,0.1);
+    //stops.create(30,510,'src_halo').scale.setTo(0.1,0.1);
+    //stops.create(700,70,'src_halo').scale.setTo(0.1,0.1);
+    //stops.create(700,510,'src_halo').scale.setTo(0.1,0.1);
+    //stops.create(700,280,'src_halo').scale.setTo(0.2,0.2);
     stops.sort();
-    createDude();
+    //createDude();
 
     // The car and its settings
-    car = game.add.sprite(40, game.world.height - 250, 'car');
-    car.scale.setTo(0.1,0.1);
+    //car = game.add.sprite(0,0, 'car');
+    car.scale.setTo(0.075,0.075);
 
     //  We need to enable physics on the car
     game.physics.arcade.enable(car);
@@ -229,13 +190,476 @@
     setInterval(updateSpeed,100)
 }
 
+function createStreets(){
+
+    var street;
+
+    //top right corner cover
+    street = platforms.create(820, 42, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.25,0.2);
+    street.body.immovable = true;
+
+    //top right corner lines
+    street = platforms.create(830, 63, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90 
+    street.scale.setTo(0.13,0.2);
+    street.body.immovable = true;
+
+    //2nd midan cover
+    street = platforms.create(870, 330, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.7,0.4);
+    street.body.immovable = true;
+
+    street = platforms.create(969, 564, 'street_round');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 177
+    street.scale.setTo(0.17,0.17);
+    street.body.immovable = true;
+
+    street = platforms.create(28, 65, 'street_round');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 0
+    street.scale.setTo(0.15,0.15);
+    street.body.immovable = true;
+
+    //5th vertical, 2nd horizontal
+    for(i = 0; i < 2; i++){
+    street = platforms.create(932, 397 + i*72, 'street_block');
+    street.scale.setTo(0.17,0.19);
+    street.body.immovable = true;
+    }
+
+    street = platforms.create(85, 500, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.35,0.35);
+    street.body.immovable = true;
+
+    street = platforms.create(95, 310, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.55,0.3);
+    street.body.immovable = true;
+    //1st vertical, 2nd horizontal
+    street = platforms.create(88, 510, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 17    
+    street.scale.setTo(0.17,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(67, 440, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 17    
+    street.scale.setTo(0.17,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(100, 460, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 17    
+    street.scale.setTo(0.07,0.31);
+    street.body.immovable = true;
+
+    //6th vertical, 1st horizontal
+    street = platforms.create(850, 110, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 28    
+    street.scale.setTo(0.17,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(887, 178, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 28    
+    street.scale.setTo(0.17,0.2);
+    street.body.immovable = true;
+    
+    //1st horizontal 
+    for(i = 1; i < 10; i++){
+    street = platforms.create(25 + i*81, 65, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90
+    street.scale.setTo(0.14,0.25);
+    street.body.immovable = true;
+    }
+
+    //2nd horizontal
+    for(i = 0; i < 7; i++){
+    street = platforms.create(225 + i*80, 260, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90
+    street.scale.setTo(0.17,0.25);
+    street.body.immovable = true;
+    }
+
+    //3rd horizontal
+    for(i = 0; i < 7; i++){
+    street = platforms.create(225 + i*80, 370, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90
+    street.scale.setTo(0.17,0.25);
+    street.body.immovable = true;
+    }
+
+    //4th horizontal
+    for(i = 0; i < 10; i++){
+    street = platforms.create(175 + i*80, 570, 'street_block');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90
+    street.scale.setTo(0.14,0.2);
+    street.body.immovable = true;
+    }
+
+    //1st vertical, 1st horizontal
+    for(i = 0; i < 2; i++){
+    street = platforms.create(0, 90 + i*70, 'street_block');
+    street.scale.setTo(0.14,0.2);
+    street.body.immovable = true;
+    }
+
+    //2nd vertical, 1st horizontal
+    for(i = 0; i < 1; i++){
+    street = platforms.create(175, 89 + i*80, 'street_block');
+    street.scale.setTo(0.17,0.355);
+    street.body.immovable = true;
+    }
+
+    //3rd vertical, 1st horizontal
+    for(i = 0; i < 1; i++){
+    street = platforms.create(360, 89 + i*80, 'street_block');
+    street.scale.setTo(0.17,0.355);
+    street.body.immovable = true;
+    }
+
+    //override u turn lines
+    street = platforms.create(423, 290, 'street_block');
+    street.scale.setTo(0.23,0.13);
+    street.body.immovable = true;
+
+    street = platforms.create(445, 285, 'asfalt');
+    street.scale.setTo(0.1,0.08);
+    street.body.immovable = true;
+
+
+    //overide triangle lines
+    street = platforms.create(185, 92, 'asfalt');
+    street.scale.setTo(0.77,0.24);
+    street.body.immovable = true;
+
+    //yellow lines adjacent to triangle
+    street = platforms.create(295, 146, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 26
+    street.scale.setTo(0.17,0.36);
+    street.body.immovable = true;
+
+
+    //white lines adjacent to triangle
+    street = platforms.create(230, 170, 'street_line_2');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 25
+    street.scale.setTo(0.17,0.35);
+    street.body.immovable = true;
+
+    //yellow lines adjacent to triangle
+    street = platforms.create(368, 170, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 21
+    street.scale.setTo(0.17,0.35);
+    street.body.immovable = true;
+
+    //white lines adjacent to triangle
+    street = platforms.create(378, 170, 'street_line_2');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 20
+    street.scale.setTo(0.17,0.35);
+    street.body.immovable = true;
+
+    //4th vertical, 1st horizontal
+    for(i = 0; i < 2; i++){
+    street = platforms.create(540, 89 + i*71, 'street_block');
+    street.scale.setTo(0.17,0.176);
+    street.body.immovable = true;
+    }
+
+    //5th vertical, 1st horizontal
+    for(i = 0; i < 2; i++){
+    street = platforms.create(720, 89 + i*71, 'street_block');
+    street.scale.setTo(0.17,0.176);
+    street.body.immovable = true;
+    }
+
+    //2nd vertical, 2nd horizontal
+    for(i = 0; i < 2; i++){
+    street = platforms.create(360, 89 + 310 + i*73, 'street_block');
+    street.scale.setTo(0.17,0.185);
+    street.body.immovable = true;
+    }
+
+    //3rd vertical, 2nd horizontal
+    for(i = 0; i < 2; i++){
+    street = platforms.create(540, 89 + 310 +  i*73, 'street_block');
+    street.scale.setTo(0.17,0.185);
+    street.body.immovable = true;
+    }
+
+    //4th vertical, 2nd horizontal
+    for(i = 0; i < 2; i++){
+    street = platforms.create(720, 89 + 310 +  i*73, 'street_block');
+    street.scale.setTo(0.16,0.185);
+    street.body.immovable = true;
+    }
+
+    //innner circle first midan
+    street = platforms.create(85, 310, 'street_round');
+    street.anchor.setTo(1,1);
+    street.angle += 90
+    street.scale.setTo(0.12,0.12);
+    street.body.immovable = true;
+
+    street = platforms.create(101, 310, 'street_round');
+    street.anchor.setTo(1,1);
+    street.scale.setTo(0.12,0.12);
+    street.body.immovable = true;
+
+    street = platforms.create(85, 310, 'street_round');
+    street.anchor.setTo(1,1);
+    street.angle += 180
+    street.scale.setTo(0.12,0.12);
+    street.body.immovable = true;
+
+    street = platforms.create(100, 310, 'street_round');
+    street.anchor.setTo(1,1);
+    street.angle += 270
+    street.scale.setTo(0.12,0.12);
+    street.body.immovable = true;
+
+    //overide gezera lines
+    street = platforms.create(725, 290, 'asfalt');
+    street.scale.setTo(0.1,0.09);
+    street.body.immovable = true;
+
+    //overide gezera lines
+    street = platforms.create(170, 290, 'asfalt');
+    street.scale.setTo(0.1,0.09);
+    street.body.immovable = true;
+
+    street = platforms.create(120, 619, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90    
+    street.scale.setTo(0.13,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(95, 559, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 17    
+    street.scale.setTo(0.13,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(52, 415, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 17    
+    street.scale.setTo(0.13,0.23);
+    street.body.immovable = true;
+
+    street = platforms.create(160, 475, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.13,0.35);
+    street.body.immovable = true;
+
+    street = platforms.create(26, 300, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.13,0.35);
+    street.body.immovable = true;
+
+    street = platforms.create(115, 255, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90 
+    street.scale.setTo(0.13,0.3);
+    street.body.immovable = true;
+
+    street = platforms.create(55, 242, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.03,0.03);
+    street.body.immovable = true;
+
+    street = platforms.create(157, 424, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90 
+    street.scale.setTo(0.13,0.1);
+    street.body.immovable = true;
+
+    street = platforms.create(300, 114, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90 
+    street.scale.setTo(0.13,0.33);
+    street.body.immovable = true;
+
+    //top right corner lines
+    street = platforms.create(943, 155, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 29   
+    street.scale.setTo(0.17,0.85);
+    street.body.immovable = true;
+
+    // cover below 2nd midan
+    street = platforms.create(860, 410, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.55,0.05);
+    street.body.immovable = true;
+
+    // cover beside triangle midan
+    street = platforms.create(870, 220, 'asfalt');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.1,0.05);
+    street.body.immovable = true;
+
+    //innner circle 2nd midan
+    street = platforms.create(841, 335, 'street_round');
+    street.anchor.setTo(1,1);
+    street.angle += 90
+    street.scale.setTo(0.2,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(879, 329, 'street_round');
+    street.anchor.setTo(1,1);
+    street.angle -= 20
+    street.scale.setTo(0.2,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(840, 317, 'street_round');
+    street.anchor.setTo(1,1);
+    street.angle += 183
+    street.scale.setTo(0.2,0.2);
+    street.body.immovable = true;
+
+    street = platforms.create(875, 316, 'street_round');
+    street.anchor.setTo(1,1);
+    street.angle += 273
+    street.scale.setTo(0.2,0.2);
+    street.body.immovable = true;
+
+    //right most vertical line
+    street = platforms.create(1027, 355, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.17,0.25);
+    street.body.immovable = true;
+
+    //gezera lines
+    street = platforms.create(760, 315, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.17,0.13);
+    street.body.immovable = true;
+
+    //gezera lines
+    street = platforms.create(230, 315, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.scale.setTo(0.17,0.13);
+    street.body.immovable = true;
+
+    //triangle bottom line
+    street = platforms.create(820, 192, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle -= 105
+    street.scale.setTo(0.17,0.2);
+    street.body.immovable = true;
+
+    //bottom right rectangle top line
+    street = platforms.create(857, 455, 'street_line');
+    street.anchor.setTo(0.5,0.5);
+    street.angle += 90
+    street.scale.setTo(0.17,0.38);
+    street.body.immovable = true;
+
+}
+
+function createAreas(){
+    //1st horizontal row
+    var area = platforms.create(18, 65, 'square');
+    area.scale.setTo(0.205,0.205);
+    area.body.immovable = true;
+
+    area = platforms.create(390, 65, 'square');
+    area.scale.setTo(0.2,0.2);
+    area.body.immovable = true;
+
+    area = platforms.create(570, 65, 'square');
+    area.scale.setTo(0.2,0.2);
+    area.body.immovable = true;
+
+    // 2nd horizontal row
+    area = platforms.create(440, 287, 'square');
+    area.scale.setTo(0.38,0.06);
+    area.body.immovable = true;
+
+    area = platforms.create(125, 287, 'square');
+    area.scale.setTo(0.4,0.06);
+    area.body.immovable = true;
+
+    //3rd horizontal row
+    area = platforms.create(60, 380, 'square');
+    area.scale.setTo(0.4,0.2);
+    area.body.immovable = true;
+
+    area = platforms.create(390, 380, 'square');
+    area.scale.setTo(0.2,0.2);
+    area.body.immovable = true;
+
+    area = platforms.create(570, 380, 'square');
+    area.scale.setTo(0.2,0.2);
+    area.body.immovable = true;
+
+    area = platforms.create(730, 405, 'square');
+    area.scale.setTo(0.27,0.175);
+    area.body.immovable = true;
+
+    // triangles
+    area = platforms.create(300, 145, 'triangle');
+    area.anchor.setTo(0.5,0.5);
+    area.angle += 180
+    area.scale.setTo(0.21,0.22);
+    area.body.immovable = true;
+
+    area = platforms.create(815, 172, 'triangle');
+    area.anchor.setTo(0.5,0.5);
+    area.angle += -13
+    area.scale.setTo(0.14,0.22);
+    area.body.immovable = true;
+
+    // side triangles
+    area = platforms.create(-100, 300, 'triangle');
+    area.scale.setTo(0.25,0.45);
+    area.body.immovable = true;
+
+    area = platforms.create(997, 120, 'triangle');
+    area.anchor.setTo(0.5,0.5);
+    area.angle += 178
+    area.scale.setTo(0.6,0.6);
+    area.body.immovable = true;
+
+    // el mayadenn
+    area = platforms.create(55, 265, 'midan');
+    area.scale.setTo(0.1,0.1);
+    area.body.immovable = true;
+
+    area = platforms.create(800, 255, 'midan');
+    area.scale.setTo(0.15,0.15);
+    area.body.immovable = true;
+
+    //Bar image
+    bar = platforms.create(0, 0, 'Bar');
+    bar.scale.setTo(1,0.3);
+    bar.body.immovable = true;
+
+}
+
 function update() {
     if(!start)
         return;
 
     //  Collide the car and the stars with the platforms
-    game.physics.arcade.collide(car, platforms);
+    //game.physics.arcade.collide(car, platforms);
     game.physics.arcade.collide(dudes, platforms);
+    game.physics.arcade.collide(car, bar);
 
     //  Checks to see if the car overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(car, dudes , collectDude, null, this);
@@ -247,6 +671,9 @@ function update() {
     car.body.angularVelocity = 0;
     var move = false;
     var reverse = false;
+
+    if(car.x >= 49 && car.x <= 166 && car.y >= 81 && car.y <= 216)
+        msgText.visible = true
     //car.angle -= 90;
 
     directionSpeed = 200;
@@ -357,7 +784,7 @@ function createPopup(){
     //game.add.text(0, -200, " Question " + '', style);
     questionText.anchor.set(0.5);
     Popup.addChild(questionText);
-    NextQuestion()
+    //NextQuestion()
     Popup.visible = false;
 }
 
@@ -365,6 +792,7 @@ function createPopup(){
 function hidePopup(){
     Popup.visible = false;
 }
+
 
 function NextQuestion(){
     blockAnswer = false;
@@ -397,6 +825,10 @@ function NextQuestion(){
     currentQuestion++;
     if(currentQuestion >= allQuestions.length)
         currentQuestion = 0;
+}
+
+function getCord(){
+    alert(car.x+","+car.y);
 }
 
 function GiveAnswer(answer){
