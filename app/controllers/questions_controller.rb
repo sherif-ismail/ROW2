@@ -12,4 +12,14 @@ class QuestionsController < ApplicationController
   	end
   	redirect_to current_user
   end
+
+  def deleteData
+    if(is_admin?)
+      Question.delete_all
+      flash[:success] = 'Done!' # Not quite right!
+    else
+      flash[:danger] = 'You are not authorized to perform this action!'
+    end
+    redirect_to current_user
+  end
 end

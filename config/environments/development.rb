@@ -22,8 +22,8 @@ Rails.application.configure do
     :address        => 'smtp.sendgrid.net',
     :port           => '587',
     :authentication => :plain,
-    :user_name      => 'sherif.ismail318',
-    :password       => '1234emailheroku',
+    :user_name      => '',
+    :password       => '',
     :enable_starttls_auto => true
   }
   # Print deprecation notices to the Rails logger.
