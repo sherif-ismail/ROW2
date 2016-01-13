@@ -14,6 +14,9 @@
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
     var game = new Phaser.Game(1000, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
+    var loading;
+    var loadingFrame = 3;
+    var loadingCounter = 0;
     var car;
     var bar;
     var platforms;
@@ -70,15 +73,8 @@
         game.load.image('triangle', '<%= asset_path 'triangle.png' %>');
         game.load.image('midan', '<%= asset_path 'midan.png' %>');
         game.load.image('background', '<%= asset_path 'start_Background.png' %>');
+        game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
-        game.load.image('src_halo_1', '<%= asset_path 'dest1.png' %>');
-        game.load.image('src_halo_2', '<%= asset_path 'dest2.png' %>');
-        game.load.image('src_halo_3', '<%= asset_path 'dest3.png' %>');
-        game.load.image('src_halo_4', '<%= asset_path 'dest4.png' %>');
-        game.load.image('dest_halo_1', '<%= asset_path 'circle1.png' %>');
-        game.load.image('dest_halo_2', '<%= asset_path 'circle2.png' %>');
-        game.load.image('dest_halo_3', '<%= asset_path 'circle3.png' %>');
-        game.load.image('dest_halo_4', '<%= asset_path 'circle4.png' %>');
         game.load.image('car', '<%= asset_path 'car.png' %>');
         game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
         game.load.image('street_block', '<%= asset_path 'square-road.png' %>');
@@ -88,6 +84,19 @@
         game.load.image('street_round_2', '<%= asset_path 'round-road.png' %>');
         game.load.image('street_turn', '<%= asset_path 'turn-2-road.png' %>');
         game.load.image('asfalt', '<%= asset_path 'plain-road.png' %>');
+        game.load.image('src_halo_1', '<%= asset_path 'dest1.png' %>');
+        game.load.image('src_halo_2', '<%= asset_path 'dest2.png' %>');
+        game.load.image('src_halo_3', '<%= asset_path 'dest3.png' %>');
+        game.load.image('src_halo_4', '<%= asset_path 'dest4.png' %>');
+        game.load.image('dest_halo_1', '<%= asset_path 'circle1.png' %>');
+        game.load.image('dest_halo_2', '<%= asset_path 'circle2.png' %>');
+        game.load.image('dest_halo_3', '<%= asset_path 'circle3.png' %>');
+        game.load.image('dest_halo_4', '<%= asset_path 'circle4.png' %>');
+        game.load.image('traffic_1', '<%= asset_path 'traffic_1.png' %>');
+        game.load.image('traffic_5', '<%= asset_path 'traffic_2.png' %>');
+        game.load.image('traffic_3', '<%= asset_path 'traffic_3.png' %>');
+        game.load.image('traffic_2', '<%= asset_path 'traffic_4.png' %>');
+        game.load.image('traffic_4', '<%= asset_path 'traffic_5.png' %>');
         //<% for x in @images %>
         //game.load.image('<%= x %>','<%= asset_path x %>');
         //<% end %>
@@ -95,11 +104,31 @@
 
     function IntroCreate(){
       start = false;
-      startBackground = game.add.sprite(0,0,'background');
+      startBackground = game.add.sprite(0,0,'white_background');
+      startBackground.scale.setTo(4,4);
+      loading = game.add.sprite(400,0,'traffic_1');
+      loadingAnimation()
       //game.add.sprite(0,0,'test').scale.setTo(0.1,0.1)
-      startButton = game.add.button(200,450,'button-start',IntroDestroy,this,1,0,2);
-      game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
-      game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
+      //game.add.button(200,200,'traffic_waiting',IntroDestroy,this,1,0,2);
+      //game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
+      //game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
+    }
+
+    function loadingAnimation(){
+        loadingCounter++;
+        if(loadingFrame == 3){
+            loadingFrame++;
+        }else if(loadingFrame == 4){
+            loadingFrame--;
+        }
+        loading.destroy();
+        if(loadingCounter>10){
+            loading = game.add.sprite(450,0,'traffic_5');
+            startButton = game.add.button(300,450,'button-start',IntroDestroy,this,1,0,2);
+            return;
+        }
+        loading = game.add.sprite(450,0,'traffic_'+loadingFrame);
+        setTimeout(loadingAnimation,500);
     }
 
     function IntroDestroy(){     
@@ -166,8 +195,8 @@
 
     start = true;
 
-    setInterval(updateNitro,200)
-    setInterval(updateSpeed,200)
+    setInterval(updateNitro,150)
+    setInterval(updateSpeed,150)
 }
 
 function createStreets(){
