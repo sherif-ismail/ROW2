@@ -14,7 +14,7 @@
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
     var game = new Phaser.Game(1000, 600, Phaser.AUTO, '', { preload: preload, create: doNothing, update: update });
-    setTimeout(IntroCreate,1000);
+    setTimeout(IntroCreate,3000);
     var loading;
     var loadingFrame = 3;
     var loadingCounter = 0;
