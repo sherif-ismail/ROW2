@@ -2,7 +2,6 @@
 <html lang="en"> 
 <head> 
     <meta charset="UTF-8" />
-    <title>Phaser - Making your first game, part 9</title>
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <style type="text/css">
     body {
@@ -11,9 +10,19 @@
     </style>
 </head>
 <body>
+<div class="row expanded section" >
+  <div class="large-12 columns" id="game">
+
+  </div>
+</div>
+<div class="row footer section expanded" id="footer">
+  <div class="large-12 columns">
+    <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
+  </div>
+</div>
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
-    var game = new Phaser.Game(1000, 600, Phaser.AUTO, '', { preload: preload, create: doNothing, update: update });
+    var game = new Phaser.Game(1000, 600, Phaser.AUTO, 'game', { preload: preload, create: doNothing, update: update });
     setTimeout(IntroCreate,3000);
     var loading;
     var loadingFrame = 3;

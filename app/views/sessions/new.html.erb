@@ -1,19 +1,31 @@
 <% provide(:title, "Log in") %>
-<h1>Log in</h1>
-
-<div class="row">
-  <div class="col-md-6 col-md-offset-3">
-    <%= form_for(:session, url: login_path) do |f| %>
-
-      <%= f.label :email %>
-      <%= f.email_field :email, class: 'form-control' %>
-
-      <%= f.label :password %>
-      <%= f.password_field :password, class: 'form-control' %>
-
-      <%= f.submit "Log in", class: "btn btn-primary" %>
-    <% end %>
-
-    <p>New user? <%= link_to "Sign up now!", signup_path %></p>
-  </div>
-</div>
+<!doctype html>
+<html class="no-js" lang="en">
+  <body>
+    <div class="row full-height full-width center-vertical-parent">
+      <div class="large-12 columns center-vertical">
+        <h1 class="">Log in</h1>
+        <div class="row">
+          <div class="small-5 columns small-centered">
+            <p></p>
+          </div>
+        </div>       
+          <div class="row">
+            <div class="large-3 columns small-centered">          
+              <%= form_for(:session, url: login_path) do |f| %>
+                <%= f.email_field :email, :placeholder => "Email", class: 'form-control' %>
+                <%= f.password_field :password, :placeholder => "Password", class: 'form-control' %>
+                <%= f.button "Log in", type: "submit", class: "button full-width icon-lock-open" %>
+              <% end %>
+              <%= link_to "Sign up now!", signup_path, class: "button secondary full-width icon-user-add" %>
+              <%= link_to "Home", root_path, class: "button secondary full-width icon-home" %>           
+            </div>
+        <div class="row footer" id="footer">
+          <div class="large-12 columns">
+            <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

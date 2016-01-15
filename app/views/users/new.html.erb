@@ -1,30 +1,37 @@
 <% provide(:title, 'Sign up') %>
-<h1>Sign up</h1>
-
-<div class="row">
-  <div class="col-md-6 col-md-offset-3">
-    <%= form_for(@user) do |f| %>
-      <%= render 'shared/error_messages' %>
-
-      <%= f.label :name %>
-      <%= f.text_field :name, class: 'form-control' %>
-
-      <%= f.label :email %>
-      <%= f.email_field :email, class: 'form-control' %>
-
-      <%= f.label :password %>
-      <%= f.password_field :password, class: 'form-control' %>
-
-      <%= f.label :password_confirmation, "Confirmation" %>
-      <%= f.password_field :password_confirmation, class: 'form-control' %>
-
-      <%= f.label :driving, "Do you drive?" %>
-      <%= f.check_box :driving%>
-
-      <%= f.label :license, "Do you have a license?" %>
-      <%= f.check_box :license%>
-
-      <%= f.submit "Create my account", class: "btn btn-primary" %>
-    <% end %>
-  </div>
-</div>
+<!doctype html>
+<html class="no-js" lang="en">
+  <body>
+    <div class="row full-height full-width center-vertical-parent">
+      <div class="large-12 columns center-vertical">
+        <h1 class="">Sign up</h1>
+        <div class="row">
+          <div class="small-5 columns small-centered">
+            <p></p>
+          </div>
+        </div>       
+          <div class="row">
+            <div class="large-3 columns small-centered">          
+              <%= form_for(@user) do |f| %>
+                <%= render 'shared/error_messages' %>
+                <%= f.text_field :name, :placeholder => "Name", class: 'form-control' %>
+                <%= f.email_field :email, :placeholder => "Email", class: 'form-control' %>
+                <%= f.password_field :password, :placeholder => "Password", class: 'form-control' %>
+                <%= f.password_field :password_confirmation, :placeholder => "Password Confirmation", class: 'form-control' %>
+                <%= f.label :driving, "Do you drive?", class: "checkbox"%>
+                <%= f.check_box :driving%>
+                <%= f.label :license, "Do you have a license?", class: "checkbox" %>
+                <%= f.check_box :license%>
+                <%= f.button "Create my account", type: "submit", class: "button full-width icon-user-add" %>
+              <% end %>
+                <%= link_to "Home", root_path, class: "button secondary full-width icon-home" %>           
+            </div>
+        <div class="row footer" id="footer">
+          <div class="large-12 columns">
+            <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
