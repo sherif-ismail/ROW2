@@ -14,6 +14,9 @@
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
     var game = new Phaser.Game(1000, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
+    var loading;
+    var loadingFrame = 3;
+    var loadingCounter = 0;
     var car;
     var bar;
     var platforms;
@@ -22,7 +25,6 @@
     var startBackground;
     var speed = 0;
     var directionSpeed;
-    var dudes;
     var startButton;
     var start;
     var score = 0;
@@ -32,13 +34,20 @@
     var msgText;
     var nitroLeft = 100;
     var nitro;
-    var dudes;
-    var diamonds;
     var collected = true;
-    var stops;
+    var source = true;
+    var stops = ["25,110","820,110","100,590","950,590","460,350","80,340","850,350"];
+    var radius = 70;
+    var currentStop;
+    var currentSource;
+    var currentDestination;
+    var halos;
+    var sourceAnimation = false;
+    var destAnimation = false;
+    var sourceFrame = 1;
+    var destFrame = 1;
     var timerText;
     var time;
-    var stars;
     var Popup;
     var allQuestions = <%= raw @questions.to_json %>;
     var allAnswers = <%= raw @answers.to_json %>;
@@ -58,21 +67,14 @@
 
     function preload() {
         game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
-        game.load.spritesheet('dude', '<%= asset_path 'dude.png' %>', 32, 48);
         game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143)
         game.load.image('Street', '<%= asset_path 'Background.png' %>');
         game.load.image('square', '<%= asset_path 'square.png' %>');
-        game.load.image('line', '<%= asset_path 'line.png' %>');
         game.load.image('triangle', '<%= asset_path 'triangle.png' %>');
         game.load.image('midan', '<%= asset_path 'midan.png' %>');
         game.load.image('background', '<%= asset_path 'start_Background.png' %>');
-        game.load.image('ground',  '<%= asset_path 'platform.png' %>');
+        game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
-        game.load.image('round',  '<%= asset_path 'round.png' %>');
-        game.load.image('src_halo', '<%= asset_path 'dest1.png' %>');
-        game.load.image('star', '<%= asset_path 'star.png' %>');
-        game.load.image('ball',  '<%= asset_path 'ball-tlb.png' %>');
-        game.load.image('diamond', '<%= asset_path 'diamond.png' %>');
         game.load.image('car', '<%= asset_path 'car.png' %>');
         game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
         game.load.image('street_block', '<%= asset_path 'square-road.png' %>');
@@ -82,6 +84,19 @@
         game.load.image('street_round_2', '<%= asset_path 'round-road.png' %>');
         game.load.image('street_turn', '<%= asset_path 'turn-2-road.png' %>');
         game.load.image('asfalt', '<%= asset_path 'plain-road.png' %>');
+        game.load.image('src_halo_1', '<%= asset_path 'dest1.png' %>');
+        game.load.image('src_halo_2', '<%= asset_path 'dest2.png' %>');
+        game.load.image('src_halo_3', '<%= asset_path 'dest3.png' %>');
+        game.load.image('src_halo_4', '<%= asset_path 'dest4.png' %>');
+        game.load.image('dest_halo_1', '<%= asset_path 'circle1.png' %>');
+        game.load.image('dest_halo_2', '<%= asset_path 'circle2.png' %>');
+        game.load.image('dest_halo_3', '<%= asset_path 'circle3.png' %>');
+        game.load.image('dest_halo_4', '<%= asset_path 'circle4.png' %>');
+        game.load.image('traffic_1', '<%= asset_path 'traffic_1.png' %>');
+        game.load.image('traffic_5', '<%= asset_path 'traffic_2.png' %>');
+        game.load.image('traffic_3', '<%= asset_path 'traffic_3.png' %>');
+        game.load.image('traffic_2', '<%= asset_path 'traffic_4.png' %>');
+        game.load.image('traffic_4', '<%= asset_path 'traffic_5.png' %>');
         //<% for x in @images %>
         //game.load.image('<%= x %>','<%= asset_path x %>');
         //<% end %>
@@ -89,11 +104,31 @@
 
     function IntroCreate(){
       start = false;
-      startBackground = game.add.sprite(0,0,'background');
+      startBackground = game.add.sprite(0,0,'white_background');
+      startBackground.scale.setTo(4,4);
+      loading = game.add.sprite(400,0,'traffic_1');
+      loadingAnimation()
       //game.add.sprite(0,0,'test').scale.setTo(0.1,0.1)
-      startButton = game.add.button(200,450,'button-start',IntroDestroy,this,1,0,2);
-      game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
-      game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
+      //game.add.button(200,200,'traffic_waiting',IntroDestroy,this,1,0,2);
+      //game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
+      //game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
+    }
+
+    function loadingAnimation(){
+        loadingCounter++;
+        if(loadingFrame == 3){
+            loadingFrame++;
+        }else if(loadingFrame == 4){
+            loadingFrame--;
+        }
+        loading.destroy();
+        if(loadingCounter>10){
+            loading = game.add.sprite(450,0,'traffic_5');
+            startButton = game.add.button(300,450,'button-start',IntroDestroy,this,1,0,2);
+            return;
+        }
+        loading = game.add.sprite(450,0,'traffic_'+loadingFrame);
+        setTimeout(loadingAnimation,500);
     }
 
     function IntroDestroy(){     
@@ -137,39 +172,13 @@
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
 
-    // Examiners
-
-    dudes = game.add.group();
-
-    //  We will enable physics for any star that is created in this group
-    dudes.enableBody = true;
-
-    // Questions
-    stars = game.add.group();
-
-    //  We will enable physics for any star that is created in this group
-    stars.enableBody = true;
-
-
-    diamonds = game.add.group();
-
-    //  We will enable physics for any star that is created in this group
-    diamonds.enableBody = true;
-
-    stops = game.add.group();
-
-    stops.enableBody = true;
-    //stops.create(30,70,'src_halo').scale.setTo(0.1,0.1);
-    //stops.create(30,510,'src_halo').scale.setTo(0.1,0.1);
-    //stops.create(700,70,'src_halo').scale.setTo(0.1,0.1);
-    //stops.create(700,510,'src_halo').scale.setTo(0.1,0.1);
-    //stops.create(700,280,'src_halo').scale.setTo(0.2,0.2);
-    stops.sort();
-    //createDude();
+    halos = game.add.group();
+    halos.enableBody = true;
+    createSource();
 
     // The car and its settings
-    //car = game.add.sprite(0,0, 'car');
-    car.scale.setTo(0.075,0.075);
+    car = game.add.sprite(100,100, 'car');
+    car.scale.setTo(0.04,0.04);
 
     //  We need to enable physics on the car
     game.physics.arcade.enable(car);
@@ -186,8 +195,8 @@
 
     start = true;
 
-    setInterval(updateNitro,100)
-    setInterval(updateSpeed,100)
+    setInterval(updateNitro,150)
+    setInterval(updateSpeed,150)
 }
 
 function createStreets(){
@@ -671,13 +680,11 @@ function update() {
 
     //  Collide the car and the stars with the platforms
     //game.physics.arcade.collide(car, platforms);
-    game.physics.arcade.collide(dudes, platforms);
     game.physics.arcade.collide(car, bar);
 
     //  Checks to see if the car overlaps with any of the stars, if he does call the collectStar function
-    game.physics.arcade.overlap(car, dudes , collectDude, null, this);
-    game.physics.arcade.overlap(car, diamonds, collectDiamond, null, this);
-    game.physics.arcade.overlap(car, stars, collectStar, null, this);
+    game.physics.arcade.overlap(car, currentSource , collectSource, null, this);
+    game.physics.arcade.overlap(car, currentDestination , collectDestination, null, this);
 
     car.body.velocity.x = 0;
     car.body.velocity.y = 0;
@@ -877,62 +884,99 @@ function updateNitro(){
         msgText.visible = true;
     }
 }
-
+var newRandom = 9999;
 var random;
-function createDude(){
+function createSource(){
     if(time > 0)
         return;
     if(!collected)
         return;
-    random = parseInt(Math.random()*5);
-    var child;
-    child = stops.getChildAt(random);
-    dudes.create(child.x+15,child.y+5,'dude',4);
+    random = parseInt(Math.random()*stops.length);
+    while(random == newRandom){
+        random = parseInt(Math.random()*stops.length);;
+    }
+    var cordinates = stops[random].split(",");
+    currentStop = cordinates;
+    currentSource = halos.create(parseInt(cordinates[0]),parseInt(cordinates[1]),"src_halo_"+sourceFrame);
+    currentSource.anchor.setTo(0.5,0.5);
+    currentSource.scale.setTo(0.25,0.25);
+    sourceAnimation = true;
+    animateSource();
 }
 
-function collectDude (car, star) {
-    dudes.getChildAt(0).destroy();
-    createDiamond();
-    //createStar();
+function collectSource () {
+    if(!inHalo()){
+        return;
+    }
+    sourceAnimation = false;
+    currentSource.destroy();
+    createDestination();
     startTimer();
 }
 
-function createDiamond(){
-    var newRandom = parseInt(Math.random()*5);
-    collected = false;
-    while(random == newRandom){
-        newRandom = parseInt(Math.random()*5);;
-    }
-    var child;
-    child = stops.getChildAt(newRandom);
-    diamonds.create(child.x+15 ,child.y+15,'diamond');
+function animateSource(){
+    if(!sourceAnimation)
+        return;
+    sourceFrame++;
+    if(sourceFrame > 4)
+        sourceFrame = 1
+    currentSource.destroy();
+    currentSource = halos.create(parseInt(currentStop[0]),parseInt(currentStop[1]),"src_halo_"+sourceFrame);
+    currentSource.anchor.setTo(0.5,0.5);
+    currentSource.scale.setTo(0.25,0.25);
+    setTimeout(animateSource,80);
 }
 
-function collectDiamond (car, star){
-    diamonds.getChildAt(0).destroy();
-    if(stars.countLiving() != 0)
-        stars.getChildAt(0).destroy();
-    if(time > 0)
-        Popup.visible = true;
+function animateDestination(){
+    if(!destAnimation)
+        return;
+    destFrame++;
+    if(destFrame > 4)
+        destFrame = 1
+    currentDestination.destroy();
+    currentDestination = halos.create(parseInt(currentStop[0]),parseInt(currentStop[1]),"dest_halo_"+destFrame);
+    currentDestination.anchor.setTo(0.5,0.5);
+    currentDestination.scale.setTo(0.25,0.25);
+    setTimeout(animateDestination,80);
+}
+function inHalo(){
+     if(car.x >= (parseInt(currentStop[0]) - radius/2) && car.x <= (parseInt(currentStop[0]) + radius/2) && car.y >= (parseInt(currentStop[1]) - radius) && car.y <= (parseInt(currentStop[1])))
+        return true;
+     return false;
+}
+
+function createDestination(){
+    newRandom = parseInt(Math.random()*stops.length);
+    collected = false;
+    source = false;
+    while(random == newRandom){
+        newRandom = parseInt(Math.random()*stops.length);;
+    }
+    var cordinates = stops[newRandom].split(",");
+    currentStop = cordinates;
+    currentDestination = halos.create(parseInt(cordinates[0]),parseInt(cordinates[1]),"dest_halo_"+destFrame);
+    currentDestination.anchor.setTo(0.5,0.5);
+    currentDestination.scale.setTo(0.25,0.25);
+    destAnimation = true;
+    animateDestination();
+}
+
+function collectDestination (){
+    if(!inHalo()){
+        return;
+    }
+    destAnimation = false;
+    currentDestination.destroy();
+    //Popup.visible = true;
     score += 10*time;
     scoreText.text = 'Score: ' + score;
     collected = true;
-    createDude();
-}
-
-function createStar(){
-    stars.create(game.world.width/2 - 30,270,'star');
-    stars.create(game.world.width/2 - 30,111,'star');
-}
-
-function collectStar(car,star){
-    star.destroy()
-    Popup.visible = true;
+    startTimer();
 }
 
 function startTimer(){
     timerText = game.add.bitmapText(180, 0, 'desyrel', '', 33);
-    time = 130;
+    time = 1;
     updateTimer();
 }
 
@@ -943,7 +987,7 @@ function updateTimer(){
         setTimeout(updateTimer,1000);
     }else{
         timerText.text = '';
-        createDude();
+        createSource();
         hidePopup();
     }
 }
