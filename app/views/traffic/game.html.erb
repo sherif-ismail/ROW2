@@ -13,7 +13,8 @@
 <body>
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
-    var game = new Phaser.Game(1000, 600, Phaser.AUTO, '', { preload: preload, create: IntroCreate, update: update });
+    var game = new Phaser.Game(1000, 600, Phaser.AUTO, '', { preload: preload, create: doNothing, update: update });
+    setTimeout(IntroCreate,1000);
     var loading;
     var loadingFrame = 3;
     var loadingCounter = 0;
@@ -29,16 +30,18 @@
     var start;
     var score = 0;
     var scoreText;
-    var nitroText;
     var speedText;
     var msgText;
     var nitroLeft = 100;
     var nitro;
     var collected = true;
     var source = true;
-    var stops = ["25,110","820,110","100,590","950,590","460,350","80,340","850,350"];
+    var stops = ["25,110","820,110","100,590","950,590","460,350","85,345","850,350"];
+    var slowAreas = ["57,85,176,231"];
     var radius = 70;
     var currentStop;
+    var nitroTank;
+    var nitroFill;
     var currentSource;
     var currentDestination;
     var halos;
@@ -67,21 +70,29 @@
 
     function preload() {
         game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
-        game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143)
-        game.load.image('Street', '<%= asset_path 'Background.png' %>');
+        game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143);
+        game.load.image('traffic_1', '<%= asset_path 'traffic_1.png' %>');
+        game.load.image('traffic_2', '<%= asset_path 'traffic_2.png' %>');
+        game.load.image('traffic_3', '<%= asset_path 'traffic_3.png' %>');
+        game.load.image('traffic_4', '<%= asset_path 'traffic_4.png' %>');
+        game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
+        game.load.image('white_bar', '<%= asset_path 'white.png' %>');
         game.load.image('square', '<%= asset_path 'square.png' %>');
         game.load.image('triangle', '<%= asset_path 'triangle.png' %>');
         game.load.image('midan', '<%= asset_path 'midan.png' %>');
-        game.load.image('background', '<%= asset_path 'start_Background.png' %>');
-        game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
-        game.load.image('car', '<%= asset_path 'car.png' %>');
+        game.load.image('car', '<%= asset_path 'car1.png' %>');
         game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
+        game.load.image('nitro_empty','<%= asset_path 'nosbarempty.png' %>');
+        game.load.image('nitro_fill_1','<%= asset_path 'nosbarfillimage_1.png' %>');
+        game.load.image('nitro_fill_2','<%= asset_path 'nosbarfillimage_2.png' %>');
+        game.load.image('nitro_fill_3','<%= asset_path 'nosbarfillimage_3.png' %>');
+        game.load.image('nitro_fill_4','<%= asset_path 'nosbarfillimage_4.png' %>');
+        game.load.image('nitro_fill_5','<%= asset_path 'nosbarfillimage_5.png' %>');
         game.load.image('street_block', '<%= asset_path 'square-road.png' %>');
         game.load.image('street_line', '<%= asset_path 'line-road.png' %>');
         game.load.image('street_line_2', '<%= asset_path 'line-2-road.png' %>');
         game.load.image('street_round', '<%= asset_path 'turn-road.png' %>');
-        game.load.image('street_round_2', '<%= asset_path 'round-road.png' %>');
         game.load.image('street_turn', '<%= asset_path 'turn-2-road.png' %>');
         game.load.image('asfalt', '<%= asset_path 'plain-road.png' %>');
         game.load.image('src_halo_1', '<%= asset_path 'dest1.png' %>');
@@ -92,43 +103,46 @@
         game.load.image('dest_halo_2', '<%= asset_path 'circle2.png' %>');
         game.load.image('dest_halo_3', '<%= asset_path 'circle3.png' %>');
         game.load.image('dest_halo_4', '<%= asset_path 'circle4.png' %>');
-        game.load.image('traffic_1', '<%= asset_path 'traffic_1.png' %>');
-        game.load.image('traffic_5', '<%= asset_path 'traffic_2.png' %>');
-        game.load.image('traffic_3', '<%= asset_path 'traffic_3.png' %>');
-        game.load.image('traffic_2', '<%= asset_path 'traffic_4.png' %>');
-        game.load.image('traffic_4', '<%= asset_path 'traffic_5.png' %>');
-        //<% for x in @images %>
-        //game.load.image('<%= x %>','<%= asset_path x %>');
-        //<% end %>
+
+        <% for x in @images %>
+        game.load.image('<%= x %>','<%= asset_path x %>');
+        <% end %>
+    }
+
+    function doNothing(){
+        loadingCounter = -1;
     }
 
     function IntroCreate(){
       start = false;
       startBackground = game.add.sprite(0,0,'white_background');
       startBackground.scale.setTo(4,4);
-      loading = game.add.sprite(400,0,'traffic_1');
-      loadingAnimation()
+      loading = game.add.sprite(450,100,'traffic_1');
+      setTimeout(loadingAnimation,500);
       //game.add.sprite(0,0,'test').scale.setTo(0.1,0.1)
       //game.add.button(200,200,'traffic_waiting',IntroDestroy,this,1,0,2);
-      //game.add.bitmapText(game.world.width/2, 50, 'desyrel', 'Rules On Wheels', 40);
+      game.add.bitmapText(350, 50, 'desyrel', 'Rules On Wheels', 40);
       //game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
     }
 
     function loadingAnimation(){
-        loadingCounter++;
-        if(loadingFrame == 3){
-            loadingFrame++;
-        }else if(loadingFrame == 4){
-            loadingFrame--;
+        if(loadingCounter == 0){
+            game.add.sprite(450,100,'traffic_2');
         }
-        loading.destroy();
-        if(loadingCounter>10){
-            loading = game.add.sprite(450,0,'traffic_5');
-            startButton = game.add.button(300,450,'button-start',IntroDestroy,this,1,0,2);
+        if(loadingFrame == 2){
+            loadingFrame++;
+            loading.destroy();
+        }else if(loadingFrame == 3){
+            loadingFrame--;
+            loading = game.add.sprite(451,178,'traffic_3');
+        }
+        if(loadingCounter == -1){
+            loading = game.add.sprite(450,100,'traffic_4');
+            startButton = game.add.button(300,350,'button-start',IntroDestroy,this,1,0,2);
             return;
         }
-        loading = game.add.sprite(450,0,'traffic_'+loadingFrame);
-        setTimeout(loadingAnimation,500);
+        loadingCounter++;
+        setTimeout(loadingAnimation,350);
     }
 
     function IntroDestroy(){     
@@ -163,8 +177,6 @@
     scoreText = game.add.bitmapText(10, 0, 'desyrel', 'Score: 0', 32);
     // game.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#FFFFFF',  });
 
-    // Nitrous
-    nitroText = game.add.bitmapText(635, 0, 'desyrel', 'Nitro: Full', 32);
     // game.add.text(420, 5, 'Nitro: 60', { fontSize: '32px', fill: '#FFFFFF',  });
     msgText = game.add.bitmapText(530, 0, 'desyrel', 'Go!!', 34);
 
@@ -177,8 +189,8 @@
     createSource();
 
     // The car and its settings
-    car = game.add.sprite(100,100, 'car');
-    car.scale.setTo(0.04,0.04);
+    car = game.add.sprite(300,300, 'car');
+    car.scale.setTo(0.05,0.05);
 
     //  We need to enable physics on the car
     game.physics.arcade.enable(car);
@@ -186,14 +198,17 @@
     //  car physics properties. Give the little guy a slight bounce.
 
     car.body.collideWorldBounds = true;
-
-    car.body.collideWorldBounds = true;
-
     car.anchor.setTo(0.3, 0.5);
-
     createPopup();
-
     start = true;
+
+    nitroFill = game.add.sprite(755,-37,'nitro_fill_1');
+    nitroFill.anchor.setTo(0,0);
+    nitroFill.scale.setTo(0.23,0.13);
+
+    nitroTank = game.add.sprite(750,-45,'nitro_empty');
+    nitroTank.anchor.setTo(0,0);
+    nitroTank.scale.setTo(0.25,0.15);
 
     setInterval(updateNitro,150)
     setInterval(updateSpeed,150)
@@ -432,27 +447,27 @@ function createStreets(){
     }
 
     //innner circle first midan
-    street = platforms.create(85, 310, 'street_round');
+    street = platforms.create(88, 313, 'street_round');
     street.anchor.setTo(1,1);
     street.angle += 90
-    street.scale.setTo(0.12,0.12);
+    street.scale.setTo(0.14,0.14);
     street.body.immovable = true;
 
-    street = platforms.create(101, 310, 'street_round');
+    street = platforms.create(104, 313, 'street_round');
     street.anchor.setTo(1,1);
-    street.scale.setTo(0.12,0.12);
+    street.scale.setTo(0.14,0.14);
     street.body.immovable = true;
 
-    street = platforms.create(85, 310, 'street_round');
+    street = platforms.create(83, 314, 'street_round');
     street.anchor.setTo(1,1);
     street.angle += 180
-    street.scale.setTo(0.12,0.12);
+    street.scale.setTo(0.15,0.14);
     street.body.immovable = true;
 
-    street = platforms.create(100, 310, 'street_round');
+    street = platforms.create(103, 313, 'street_round');
     street.anchor.setTo(1,1);
     street.angle += 270
-    street.scale.setTo(0.12,0.12);
+    street.scale.setTo(0.14,0.14);
     street.body.immovable = true;
 
     //overide gezera lines
@@ -659,8 +674,8 @@ function createAreas(){
     area.body.immovable = true;
 
     // el mayadenn
-    area = platforms.create(55, 265, 'midan');
-    area.scale.setTo(0.1,0.1);
+    area = platforms.create(50, 258, 'midan');
+    area.scale.setTo(0.12,0.12);
     area.body.immovable = true;
 
     area = platforms.create(800, 255, 'midan');
@@ -696,7 +711,7 @@ function update() {
         msgText.visible = true
     //car.angle -= 90;
 
-    directionSpeed = 200;
+    directionSpeed = 300;
 
     if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && nitroLeft > 0 && game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false){
         nitro = true;
@@ -706,11 +721,11 @@ function update() {
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false)
     {
-        if(speed < 450)
+        if(speed < 350)
             speed += 5;
-        if(speed > 450 && !nitro)
+        if(speed > 350 && !nitro)
             speed -= 5
-        if(nitro && speed < 650)
+        if(nitro && speed < 550)
             speed += 5
         move = true;
     }else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN) && Popup.visible == false)
@@ -725,6 +740,10 @@ function update() {
             speed -= 10
         if(speed < 0)
             speed += 5
+    }
+
+    if(inArea()){
+        speed -=50;
     }
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
@@ -754,14 +773,14 @@ function createPopup(){
     Popup.alpha = 0.8;
     Popup.anchor.set(0.5);
     Popup.inputEnabled = true;
-    normalStyle = { font: "28px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    hoverStyle = { font: "30px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    wrongStyle = { font: "30px Arial", fill: "#b20000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    correctStyle = { font: "32px Arial", fill: "#458B00", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    normalStyle = { font: "20px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    hoverStyle = { font: "22px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    wrongStyle = { font: "22px Arial", fill: "#b20000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    correctStyle = { font: "24px Arial", fill: "#458B00", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
     //Popup.input.enableDrag();
 
     //  And click the close button to close it down again
-    Popup.scale.setTo(1.5,1.1);
+    Popup.scale.setTo(2,1.1);
     answerText[0] = game.add.text(-240, +50, "Answer 1", normalStyle);
     answerText[0].inputEnabled = true;
     answerText[0].events.onInputDown.add(GiveAnswer, this);
@@ -771,7 +790,7 @@ function createPopup(){
     answerText[0].events.onInputOut.add(AnswerHoverOut, this);
     Popup.addChild(answerText[0]);
 
-    answerText[1] = game.add.text(-240, +150, "Answer 2", normalStyle);
+    answerText[1] = game.add.text(-240, +170, "Answer 2", normalStyle);
     answerText[1].inputEnabled = true;
     answerText[1].events.onInputDown.add(GiveAnswer, this);
     answerText[1].input.priorityID = 1;
@@ -789,7 +808,7 @@ function createPopup(){
     answerText[2].events.onInputOut.add(AnswerHoverOut, this);
     Popup.addChild(answerText[2]);
 
-    answerText[3] = game.add.text(0, +150, "Answer 4", normalStyle);
+    answerText[3] = game.add.text(0, +170, "Answer 4", normalStyle);
     answerText[3].inputEnabled = true;
     answerText[3].events.onInputDown.add(GiveAnswer, this);
     answerText[3].input.priorityID = 1;
@@ -804,7 +823,7 @@ function createPopup(){
     //game.add.text(0, -200, " Question " + '', style);
     questionText.anchor.set(0.5);
     Popup.addChild(questionText);
-    //NextQuestion()
+    NextQuestion()
     Popup.visible = false;
 }
 
@@ -877,11 +896,18 @@ function AnswerHoverOut(answer){
 }
 
 function updateNitro(){
-    msgText.visible = false;
+    //msgText.visible = false;
     if(nitro){
         nitroLeft -= 1;
-        nitroText.text = 'Nitro: '+ nitroLeft+'%'
-        msgText.visible = true;
+        nitroFill.destroy();
+        nitroFill = game.add.sprite(755+(100-nitroLeft)/3.8,-37,'nitro_fill_'+(5-parseInt(nitroLeft/20)));
+        nitroFill.anchor.setTo(0,0);
+        nitroFill.scale.setTo((nitroLeft/100)*0.23,0.13);
+        nitroTank.destroy();
+        nitroTank = game.add.sprite(750,-45,'nitro_empty');
+        nitroTank.anchor.setTo(0,0);
+        nitroTank.scale.setTo(0.25,0.15);
+        //msgText.visible = true;
     }
 }
 var newRandom = 9999;
@@ -905,13 +931,13 @@ function createSource(){
 }
 
 function collectSource () {
-    if(!inHalo()){
+    if(!inHalo() || speed != 0){
         return;
     }
     sourceAnimation = false;
     currentSource.destroy();
     createDestination();
-    startTimer();
+    startTimer(1);
 }
 
 function animateSource(){
@@ -924,7 +950,7 @@ function animateSource(){
     currentSource = halos.create(parseInt(currentStop[0]),parseInt(currentStop[1]),"src_halo_"+sourceFrame);
     currentSource.anchor.setTo(0.5,0.5);
     currentSource.scale.setTo(0.25,0.25);
-    setTimeout(animateSource,80);
+    setTimeout(animateSource,70);
 }
 
 function animateDestination(){
@@ -937,12 +963,21 @@ function animateDestination(){
     currentDestination = halos.create(parseInt(currentStop[0]),parseInt(currentStop[1]),"dest_halo_"+destFrame);
     currentDestination.anchor.setTo(0.5,0.5);
     currentDestination.scale.setTo(0.25,0.25);
-    setTimeout(animateDestination,80);
+    setTimeout(animateDestination,70);
 }
 function inHalo(){
      if(car.x >= (parseInt(currentStop[0]) - radius/2) && car.x <= (parseInt(currentStop[0]) + radius/2) && car.y >= (parseInt(currentStop[1]) - radius) && car.y <= (parseInt(currentStop[1])))
         return true;
      return false;
+}
+
+function inArea(){
+    for(i = 0; i < slowAreas.length; i++){
+        var cordinates = slowAreas[i].split(",");
+        if(car.x >= parseInt(cordinates[0]) && car.x <= parseInt(cordinates[2]) && car.y >= parseInt(cordinates[1]) && car.y <= parseInt(cordinates[3]) )
+                return true;
+    }
+    return false;
 }
 
 function createDestination(){
@@ -962,21 +997,21 @@ function createDestination(){
 }
 
 function collectDestination (){
-    if(!inHalo()){
+    if(!inHalo() || speed != 0){
         return;
     }
     destAnimation = false;
     currentDestination.destroy();
-    //Popup.visible = true;
+    Popup.visible = true;
     score += 10*time;
     scoreText.text = 'Score: ' + score;
     collected = true;
-    startTimer();
+    startTimer(5);
 }
 
-function startTimer(){
+function startTimer(t){
     timerText = game.add.bitmapText(180, 0, 'desyrel', '', 33);
-    time = 1;
+    time = t;
     updateTimer();
 }
 

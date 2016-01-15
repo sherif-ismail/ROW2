@@ -1,0 +1,91 @@
+@font-face{
+	font-family: 'roadskin';
+	src: url(font-path('RoadSkin.ttf')) format("truetype");
+}
+
+body{
+	background-color:white;
+}
+
+h3,
+h4{
+	color:#F1C40F;
+}
+
+.center-vertical-parent {
+    display: table !important;
+    height: 100% !important;
+}
+
+.center-vertical {
+    display: table-cell !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.center{
+	text-align:center;
+}
+
+#gwapContent{
+	text-align: center
+}
+
+.section{
+	margin-top:20px;
+}
+
+.row .row{
+	max-width:none;
+	margin:0px;
+}
+
+.full-height{
+	background-color:#333;
+	height:100%;
+}
+
+.full-width{
+	max-width:none;
+	width:100%;
+}
+
+#footer{
+	margin-top:60px;
+	border-top:1px solid #F1C40F;
+}
+
+.section p{
+	color:#333;
+}
+
+p{
+	color:White;
+}
+
+b{
+	color:#F1C40F;
+}
+
+h1{
+	vertical-align: middle;
+	text-align:center;
+	color:white;
+	font-family:roadskin;
+}
+
+.title{
+	border-bottom:1px solid #F1C40F;
+}
+
+#header{
+	background-image:url('../img/header.jpg');
+}
+
+#header p{
+	/*background-color:rgba(33,33,33,0.7);*/
+}
+
+#playButton{
+	font-size:20px;
+}
