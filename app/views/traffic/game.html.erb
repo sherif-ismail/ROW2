@@ -21,10 +21,29 @@
   </div>
 </div>
     <script type="text/javascript">
+    WebFontConfig = {
+    google: { families: [ 'Lobster::latin' ] }
+    };
+    (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+    })();
+    </script>
+    <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
     var game = new Phaser.Game(1000, 600, Phaser.AUTO, 'game', { preload: preload, create: doNothing, update: update });
-    setTimeout(IntroCreate,3000);
+    setTimeout(IntroCreate,1000);
+    var sessionTime = 600;
+    var sessionText;
+    var sessionTimer;
+    var examTimer;
     var loading;
+    var loadingText;
     var loadingFrame = 3;
     var loadingCounter = 0;
     var car;
@@ -45,8 +64,9 @@
     var nitro;
     var collected = true;
     var source = true;
+    var isGameOver = false;
     var stops = ["25,110","820,110","100,590","950,590","460,350","85,345","850,350"];
-    var slowAreas = ["57,85,176,231"];
+    var slowAreas = ["57,85,176,231","286,85,320,213","427,85,546,222","620,85,713,222","796,92,825,214","65,273,117,361","923,65,1000,215","957,217,1000,274","875,65,923,110","205,291,426,336","513,286,719,340","817,272,897,378","8,435,58,572","146,414,356,536","439,399,538,538","617,399,725,538","772,432,930,538"];
     var radius = 70;
     var currentStop;
     var nitroTank;
@@ -58,6 +78,7 @@
     var destAnimation = false;
     var sourceFrame = 1;
     var destFrame = 1;
+    var clocks;
     var timerText;
     var time;
     var Popup;
@@ -76,6 +97,8 @@
     var hoverStyle;
     var correctStyle;
     var wrongStyle;
+    var barStyle = { font:"Lobster", fontSize: '30px', fill: '#FFFFFF' };
+    var timeStyle = { font:"Exo", fontSize: '28px', fill: '#FFFFFF' };
 
     function preload() {
         game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
@@ -85,13 +108,17 @@
         game.load.image('traffic_3', '<%= asset_path 'traffic_3.png' %>');
         game.load.image('traffic_4', '<%= asset_path 'traffic_4.png' %>');
         game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
-        game.load.image('white_bar', '<%= asset_path 'white.png' %>');
         game.load.image('square', '<%= asset_path 'square.png' %>');
         game.load.image('triangle', '<%= asset_path 'triangle.png' %>');
         game.load.image('midan', '<%= asset_path 'midan.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
         game.load.image('car', '<%= asset_path 'car1.png' %>');
         game.load.image('Bar', '<%= asset_path 'Bar.png' %>');
+        game.load.image('plate', '<%= asset_path 'plate.png' %>');
+        game.load.image('clock', '<%= asset_path 'clock.png' %>');
+        game.load.image('timer1','<%= asset_path 'timer1.png' %>');
+        game.load.image('timer2','<%= asset_path 'timer2.png' %>');
+        game.load.image('timer3','<%= asset_path 'timer3.png' %>');
         game.load.image('nitro_empty','<%= asset_path 'nosbarempty.png' %>');
         game.load.image('nitro_fill_1','<%= asset_path 'nosbarfillimage_1.png' %>');
         game.load.image('nitro_fill_2','<%= asset_path 'nosbarfillimage_2.png' %>');
@@ -126,28 +153,39 @@
       start = false;
       startBackground = game.add.sprite(0,0,'white_background');
       startBackground.scale.setTo(4,4);
-      loading = game.add.sprite(450,100,'traffic_1');
+      loading = game.add.sprite(430,120,'traffic_1');
       setTimeout(loadingAnimation,500);
-      //game.add.sprite(0,0,'test').scale.setTo(0.1,0.1)
-      //game.add.button(200,200,'traffic_waiting',IntroDestroy,this,1,0,2);
-      game.add.bitmapText(350, 50, 'desyrel', 'Rules On Wheels', 40);
-      //game.add.bitmapText(100, 150, 'desyrel', 'Click Start to Begin!', 36);
-    }
+      game.add.text(350, 0, 'Rules on Wheels', { font:"Lobster", fontSize: '40px', fill: '#000000' });
+      loadingText = game.add.text(380, 50, 'loading....', { font:"Lobster", fontSize: '40px', fill: '#000000' });
+      WebFontConfig = {
+      google: { families: [ 'Exo:600:latin' ] }
+      };
+      (function() {
+      var wf = document.createElement('script');
+      wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+      wf.type = 'text/javascript';
+      wf.async = 'true';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wf, s);
+      })();
+     }
 
     function loadingAnimation(){
         if(loadingCounter == 0){
-            game.add.sprite(450,100,'traffic_2');
+            game.add.sprite(430,120,'traffic_2');
         }
         if(loadingFrame == 2){
             loadingFrame++;
             loading.destroy();
         }else if(loadingFrame == 3){
             loadingFrame--;
-            loading = game.add.sprite(451,178,'traffic_3');
+            loading = game.add.sprite(431,198,'traffic_3');
         }
         if(loadingCounter == -1){
-            loading = game.add.sprite(450,100,'traffic_4');
-            startButton = game.add.button(300,350,'button-start',IntroDestroy,this,1,0,2);
+            loading = game.add.sprite(430,120,'traffic_4');
+            loadingText.text = "   Ready";
+            startButton = game.add.button(280,350,'button-start',IntroDestroy,this,1,0,2);
             return;
         }
         loadingCounter++;
@@ -167,10 +205,10 @@
     //  A simple background for our game
     var temp = game.add.sprite(0, 0, 'asfalt');
     temp.scale.setTo(3.5,2);
-    temp.inputEnabled = true;
-    temp.events.onInputDown.add(getCord, this);
-    temp.input.priorityID = 1;
-    temp.input.useHandCursor = true;
+    //temp.inputEnabled = true;
+    //temp.events.onInputDown.add(getCord, this);
+    //temp.input.priorityID = 1;
+    //temp.input.useHandCursor = true;
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = game.add.group();
@@ -181,13 +219,22 @@
     createStreets();
     createAreas();
 
-    speedText = game.add.bitmapText(350, 0, 'desyrel', 'Speed: 0', 32);
+    sessionTimer = game.add.sprite(180,-45,'timer2');
+    sessionTimer.scale.setTo(0.15,0.15);
+    sessionText = game.add.text(205,2,'',timeStyle);
+
+    examTimer = game.add.sprite(488,-45,'timer3');
+    examTimer.scale.setTo(0.1,0.15);
+
+    speedText = game.add.text(330, 0, 'Score: 0', barStyle);
+
     // The score
-    scoreText = game.add.bitmapText(10, 0, 'desyrel', 'Score: 0', 32);
-    // game.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#FFFFFF',  });
+    scoreText = game.add.text(10, 0, 'Score: 0', barStyle);
 
     // game.add.text(420, 5, 'Nitro: 60', { fontSize: '32px', fill: '#FFFFFF',  });
-    msgText = game.add.bitmapText(530, 0, 'desyrel', 'Go!!', 34);
+    msgText = game.add.text(640, 0, 'Get Out!', barStyle);
+
+    timerText = game.add.text(500, 2, '', timeStyle);
 
     msgText.visible = false;
     //  Our controls.
@@ -198,14 +245,12 @@
     createSource();
 
     // The car and its settings
-    car = game.add.sprite(300,300, 'car');
+    car = game.add.sprite(390,500, 'car');
     car.scale.setTo(0.05,0.05);
+
 
     //  We need to enable physics on the car
     game.physics.arcade.enable(car);
-
-    //  car physics properties. Give the little guy a slight bounce.
-
     car.body.collideWorldBounds = true;
     car.anchor.setTo(0.3, 0.5);
     createPopup();
@@ -219,8 +264,9 @@
     nitroTank.anchor.setTo(0,0);
     nitroTank.scale.setTo(0.25,0.15);
 
-    setInterval(updateNitro,150)
-    setInterval(updateSpeed,150)
+    setInterval(updateNitro,100)
+    setInterval(updateSpeed,100)
+    setInterval(displaySessionTime,1000);
 }
 
 function createStreets(){
@@ -701,6 +747,8 @@ function createAreas(){
 function update() {
     if(!start)
         return;
+    if(isGameOver)
+        return;
 
     //  Collide the car and the stars with the platforms
     //game.physics.arcade.collide(car, platforms);
@@ -709,20 +757,18 @@ function update() {
     //  Checks to see if the car overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(car, currentSource , collectSource, null, this);
     game.physics.arcade.overlap(car, currentDestination , collectDestination, null, this);
+    game.physics.arcade.overlap(car, clocks , collectClock, null, this);
 
     car.body.velocity.x = 0;
     car.body.velocity.y = 0;
     car.body.angularVelocity = 0;
     var move = false;
     var reverse = false;
-
-    if(car.x >= 49 && car.x <= 166 && car.y >= 81 && car.y <= 216)
-        msgText.visible = true
     //car.angle -= 90;
 
     directionSpeed = 300;
 
-    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && nitroLeft > 0 && game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false){
+    if(game.input.keyboard.isDown(Phaser.Keyboard.SHIFT) && nitroLeft > 0 && game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false){
         nitro = true;
     }else{
         nitro = false;
@@ -730,29 +776,44 @@ function update() {
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false)
     {
-        if(speed < 350)
-            speed += 5;
-        if(speed > 350 && !nitro)
-            speed -= 5
-        if(nitro && speed < 550)
-            speed += 5
+        if(speed < 300)
+            speed += 3;
+        if(speed > 300 && !nitro)
+            speed -= 3
+        if(inArea()){
+            if(speed > 90)
+                speed -=9
+            if(nitro && speed < 120)
+                speed += 9
+        }
+        if(nitro && speed < 400)
+            speed += 3  
         move = true;
     }else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN) && Popup.visible == false)
     {
-        if(speed > -200)
-            speed -= 5;
+        if(speed > -100)
+            speed -= 3;
         if(speed > 0)
-            speed -= 5
+            speed -= 3
+        if(inArea() && speed > 0)
+            speed -= 3
+        if(inArea() && speed < -40)
+            speed += 6
         reverse = true;
     }else{
+        if(inArea() && speed > 0)
+            speed -= 3
+        if(inArea() && speed < 0)
+            speed += 3
         if(speed > 0)
-            speed -= 10
+            speed -= 3
         if(speed < 0)
-            speed += 5
+            speed += 3
     }
 
+    msgText.visible = false;
     if(inArea()){
-        speed -=50;
+        msgText.visible = true;
     }
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
@@ -885,17 +946,67 @@ function getCord(){
     alert(car.x+","+car.y);
 }
 
+function createClocks(){
+    clocks = game.add.group();
+    clocks.enableBody = true;
+    clocks.scale.setTo(1,1);
+    clocks.create(10,150,'clock');
+    clocks.create(550,150,'clock');
+    clocks.create(730,150,'clock');
+    clocks.create(840,120,'clock');
+    clocks.create(180,175,'clock');
+    clocks.create(385,175,'clock');
+    clocks.create(200,550,'clock');
+    clocks.create(450,550,'clock');
+    clocks.create(650,550,'clock');
+    clocks.create(850,550,'clock');
+    clocks.create(200,550,'clock');
+    clocks.create(370,450,'clock');
+    clocks.create(550,450,'clock');
+    clocks.create(730,450,'clock');
+    clocks.create(940,450,'clock');
+    clocks.create(150,290,'clock');
+    clocks.create(10,290,'clock');
+    clocks.create(750,290,'clock');
+    clocks.create(930,290,'clock');
+    clocks.create(90,450,'clock');
+    clocks.create(280,240,'clock');
+    clocks.create(450,240,'clock');
+    clocks.create(650,240,'clock');
+    clocks.create(280,350,'clock');
+    clocks.create(450,350,'clock');
+    clocks.create(650,350,'clock');
+    clocks.create(90,40,'clock');
+    clocks.create(290,40,'clock');
+    clocks.create(470,40,'clock');
+    clocks.create(670,40,'clock');
+    clocks.sort();
+    for(cl = 0; cl < 30; cl++){
+        clocks.getChildAt(cl).visible = false;
+    }
+    for(cl = 0; cl < 28; cl+=3){
+        var showClock = parseInt(Math.random()*3);
+        clocks.getChildAt(cl+showClock).visible = true;
+    }
+}
+
+function collectClock(car,clock){
+    if(clock.visible == true)
+        time+=1;
+    clock.destroy();
+}
+
 function GiveAnswer(answer){
     if(blockAnswer)
         return;
     blockAnswer = true;
     var old = score;
     if(answer.text == allAnswers[orderOfQuestions[currentQuestion-1]])
-        score += 100;
+        score += 50;
     answer.setStyle(wrongStyle);
     answerText[correctAnswer].setStyle(correctStyle);
     scoreText.text = 'Score: ' + score;
-    setTimeout(NextQuestion,2000-(10*(score-old)))
+    setTimeout(NextQuestion,3500-(45*(score-old)))
 }
 
 function AnswerHoverIn(answer){
@@ -944,7 +1055,7 @@ function addSpaces(ans){
 }
 
 function updateNitro(){
-    msgText.visible = false;
+    //msgText.visible = false;
     if(nitro){
         nitroLeft -= 1;
         nitroFill.destroy();
@@ -985,7 +1096,8 @@ function collectSource () {
     sourceAnimation = false;
     currentSource.destroy();
     createDestination();
-    startTimer(1);
+    startTimer(10);
+    createClocks();
 }
 
 function animateSource(){
@@ -1052,14 +1164,18 @@ function collectDestination (){
     destAnimation = false;
     currentDestination.destroy();
     Popup.visible = true;
-    score += 10*time;
+    score += 20*time;
     scoreText.text = 'Score: ' + score;
     collected = true;
-    startTimer(245);
+    clocks.destroy();
+    if(time == 0){
+        startTimer(40);
+    }else{
+        time+= 40;
+    }
 }
 
 function startTimer(t){
-    timerText = game.add.bitmapText(180, 0, 'desyrel', '', 33);
     time = t;
     updateTimer();
 }
@@ -1067,7 +1183,7 @@ function startTimer(t){
 function updateTimer(){
     if(time > 0){
         time -= 1;
-        timerText.text = 'Time: ' + time;
+        timerText.text = '' + time;
         setTimeout(updateTimer,1000);
     }else{
         timerText.text = '';
@@ -1078,6 +1194,23 @@ function updateTimer(){
 
 function updateSpeed(){
     speedText.text = 'Speed: ' + speed;
+}
+
+function displaySessionTime(){
+    sessionTime -=1;
+    sessionText.text = parseInt(sessionTime/60)+":"+sessionTime%60;
+    if(sessionTime == 0)
+        gameOver();
+}
+
+function gameOver(){
+    startBackground = game.add.sprite(0,0,'white_background');
+    startBackground.scale.setTo(4,4);
+    game.add.sprite(150,150,'plate');
+    game.add.text(300, 10, 'Game Over', { font:"Lobster", fontSize: '90px', fill: '#000000' });
+    game.add.text(200, 310, 'Sc or e', { font:"Lobster", fontSize: '90px', fill: '#000000' });
+    game.add.text(510, 310, score, { font:"Lobster", fontSize: '90px', fill: '#000000' });
+    alert(currentQuestion);
 }
 
 </script>

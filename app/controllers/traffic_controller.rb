@@ -17,12 +17,10 @@ class TrafficController < ApplicationController
     @questions = Array.new
     @images = Array.new
     for q in allQuestions
-      if(q.id >= 491 && q.id <= 501)
     	@answers << q.choice1
       @categories << q.category
       @questions << q.body
       @images << q.path
-      end
     end
   end
 
