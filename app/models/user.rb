@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   attr_accessor :remember_token, :activation_token
+  has_many :quizzes
   before_save   :downcase_email
   before_create :create_activation_digest
   validates :name,  presence: true, uniqueness: { case_sensitive: false }, length: { maximum: 50 }

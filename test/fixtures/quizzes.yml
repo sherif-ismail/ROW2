@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  flow: false
+  knowledge: false
+  result: MyText
+  belongs_to: 
+
+two:
+  flow: false
+  knowledge: false
+  result: MyText
+  belongs_to: 

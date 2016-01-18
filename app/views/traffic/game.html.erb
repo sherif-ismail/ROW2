@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="row expanded section" >
-  <div class="large-12 columns" id="game">
+  <div class="large-12 columns small-centered" id="game">
 
   </div>
 </div>
@@ -778,58 +778,61 @@ function update() {
 }
 
 function createPopup(){
-    Popup = game.add.sprite(game.world.centerX, game.world.centerY+30, 'popup');
+    Popup = game.add.sprite(game.world.centerX+20, game.world.centerY+30, 'popup');
     Popup.alpha = 0.8;
     Popup.anchor.set(0.5);
     Popup.inputEnabled = true;
-    normalStyle = { font: "20px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    hoverStyle = { font: "22px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    wrongStyle = { font: "22px Arial", fill: "#b20000", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
-    correctStyle = { font: "24px Arial", fill: "#458B00", wordWrap: true, wordWrapWidth: Popup.width, align: "center" };
+    normalStyle = { font: "20px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, boundsAlignH : "right", align: "center" };
+    hoverStyle = { font: "20px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" };
+    wrongStyle = { font: "20px Arial", fill: "#b20000", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" };
+    correctStyle = { font: "20px Arial", fill: "#458B00", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" };
     //Popup.input.enableDrag();
 
     //  And click the close button to close it down again
     Popup.scale.setTo(2,1.1);
-    answerText[0] = game.add.text(-240, +50, "Answer 1", normalStyle);
+    answerText[0] = game.add.text(+235, +-50, "Answer 1", normalStyle);
     answerText[0].inputEnabled = true;
     answerText[0].events.onInputDown.add(GiveAnswer, this);
     answerText[0].input.priorityID = 1;
     answerText[0].input.useHandCursor = true;
     answerText[0].events.onInputOver.add(AnswerHoverIn, this);
     answerText[0].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[0].anchor.setTo(1,0);
     Popup.addChild(answerText[0]);
 
-    answerText[1] = game.add.text(-240, +170, "Answer 2", normalStyle);
+    answerText[1] = game.add.text(+235, +20, "Answer 2", normalStyle);
     answerText[1].inputEnabled = true;
     answerText[1].events.onInputDown.add(GiveAnswer, this);
     answerText[1].input.priorityID = 1;
     answerText[1].input.useHandCursor = true;
     answerText[1].events.onInputOver.add(AnswerHoverIn, this);
     answerText[1].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[1].anchor.setTo(1,0);
     Popup.addChild(answerText[1]);
 
-    answerText[2] = game.add.text(0, +50, "Answer 3", normalStyle);
+    answerText[2] = game.add.text(+235, +90, "Answer 3", normalStyle);
     answerText[2].inputEnabled = true;
     answerText[2].events.onInputDown.add(GiveAnswer, this);
     answerText[2].input.priorityID = 1;
     answerText[2].input.useHandCursor = true;
     answerText[2].events.onInputOver.add(AnswerHoverIn, this);
     answerText[2].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[2].anchor.setTo(1,0);
     Popup.addChild(answerText[2]);
 
-    answerText[3] = game.add.text(0, +170, "Answer 4", normalStyle);
+    answerText[3] = game.add.text(+235, +160, "Answer 4", normalStyle);
     answerText[3].inputEnabled = true;
     answerText[3].events.onInputDown.add(GiveAnswer, this);
     answerText[3].input.priorityID = 1;
     answerText[3].input.useHandCursor = true;
     answerText[3].events.onInputOver.add(AnswerHoverIn, this);
     answerText[3].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[3].anchor.setTo(1,0);
     Popup.addChild(answerText[3]);
 
     currentImage = game.add.sprite(0,0,'');
 
-    questionText = game.add.bitmapText(0, -200, 'desyrel', 'Question', 32);
-    //game.add.text(0, -200, " Question " + '', style);
+    questionText = game.add.text(0, -200, " Question " + '', hoverStyle);
     questionText.anchor.set(0.5);
     Popup.addChild(questionText);
     NextQuestion()
@@ -850,7 +853,7 @@ function NextQuestion(){
         answerText[i].setStyle(normalStyle);
     }
     currentImage.destroy();
-    currentImage = game.add.sprite(-50,-150,images[orderOfQuestions[currentQuestion]]);
+    currentImage = game.add.sprite(-200,-220,images[orderOfQuestions[currentQuestion]]);
     Popup.addChild(currentImage);
     correctAnswer = parseInt(Math.random()*4);
     answerText[correctAnswer].text = allAnswers[orderOfQuestions[currentQuestion]];
@@ -869,6 +872,9 @@ function NextQuestion(){
             }
             answerText[i].text = allAnswers[r];
         }
+    }
+    for(ttt = 0; ttt < 4; ttt++){
+        answerText[ttt].text = addSpaces(answerText[ttt].text);
     }
     currentQuestion++;
     if(currentQuestion >= allQuestions.length)
@@ -904,8 +910,41 @@ function AnswerHoverOut(answer){
     answer.setStyle(normalStyle)
 }
 
+function formatAnswer(ans){
+    var cutoff = 20;
+    var words = ans.split(' ');
+    var newAnswer = "";
+    var j = 0;
+    var line = words[words.length-1];
+    for(counter = words.length - 2; counter >= 0 ; counter--){
+        if(j < cutoff){
+            line = words[counter] + " " + line;
+            j += words[counter].length;
+        }else{
+            if(newAnswer == ""){
+                newAnswer = line
+            }else{
+                newAnswer = line + "\n" + newAnswer; 
+            }
+            alert("nA:" +newAnswer);
+            line = words[counter];
+            j = words[counter].length;
+        }
+        alert(words[i]);
+        alert(line);
+    }
+    if(line.length >0){
+        newAnswer = line + "\n" + newAnswer;
+    }
+    return newAnswer;
+}
+
+function addSpaces(ans){
+    return ans;
+}
+
 function updateNitro(){
-    //msgText.visible = false;
+    msgText.visible = false;
     if(nitro){
         nitroLeft -= 1;
         nitroFill.destroy();
@@ -974,6 +1013,7 @@ function animateDestination(){
     currentDestination.scale.setTo(0.25,0.25);
     setTimeout(animateDestination,70);
 }
+
 function inHalo(){
      if(car.x >= (parseInt(currentStop[0]) - radius/2) && car.x <= (parseInt(currentStop[0]) + radius/2) && car.y >= (parseInt(currentStop[1]) - radius) && car.y <= (parseInt(currentStop[1])))
         return true;
@@ -1015,7 +1055,7 @@ function collectDestination (){
     score += 10*time;
     scoreText.text = 'Score: ' + score;
     collected = true;
-    startTimer(5);
+    startTimer(245);
 }
 
 function startTimer(t){
