@@ -1,8 +1,4 @@
 Rails.application.routes.draw do
-  get 'quizzes/index'
-  get 'quizzes/knowledge'
-  get 'quizzes/flow'
-
   get 'questions/index'
 
   get 'sessions/new'
@@ -21,7 +17,9 @@ Rails.application.routes.draw do
   get 'game' => 'traffic#game'
 
   get 'signup'  => 'users#new'
-
+  get 'quiz' => 'quizzes#index'
+  get 'kquiz' => 'quizzes#knowledge'
+  get 'fquiz' => 'quizzes#flow'
   get    'login'   => 'sessions#new'
   post   'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'

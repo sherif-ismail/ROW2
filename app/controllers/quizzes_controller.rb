@@ -33,7 +33,6 @@ class QuizzesController < ApplicationController
     @choice3 = Array.new
     @choice4 = Array.new
     for q in allQuestions
-      if(q.id >= 491 && q.id <= 500)
       @answers << q.choice1
       @choice2 << q.choice2
       @choice3 << q.choice3
@@ -41,7 +40,6 @@ class QuizzesController < ApplicationController
       @categories << q.category
       @questions << q.body
       @images << q.path
-      end
     end
   end
 

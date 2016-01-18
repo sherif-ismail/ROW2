@@ -1,2 +1,8 @@
-<h1>Quizzes#index</h1>
-<p>Find me in app/views/quizzes/index.html.erb</p>
+<div class="row full-width center" id="header" >
+  <div class="small-5 columns small-centered">
+    <h1 class="title">Quiz</h1>
+    <p>There are two types of quizzes. The knowledge quiz is dedicated to evaluate your knowedge in the traffic laws. The flow quiz is dedicated to evaluate how much you enjoyed playing the game. The flow quiz should only be taken after you play the game.</p>
+    <a class="button" href= <%= kquiz_path%> id="playButton"><i class="icon-newspaper"></i>Knowledge Quiz</a>
+    <a class="button" href= <%= fquiz_path %> id="playButton"><i class="icon-newspaper"></i>Flow Quiz</a>
+  </div>
+</div>
