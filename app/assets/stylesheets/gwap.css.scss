@@ -79,11 +79,20 @@ h1{
 }
 
 #header{
-	background-image:url('../img/header.jpg');
+	background-image:url(image-path('header.jpg'));
+}
+
+#header2{
+	background-color:#333;
+	border-bottom:2px solid #F1C40F;
 }
 
 #header p{
 	/*background-color:rgba(33,33,33,0.7);*/
+}
+
+.checkbox{
+	color:White;
 }
 
 #playButton{

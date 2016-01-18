@@ -1,0 +1,284 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+    body {
+        margin: 0;
+    }
+    </style>
+</head>
+<body>
+<div class="row expanded section" >
+  <div class="large-12 columns small-centered" id="game">
+
+  </div>
+</div>
+<div class="row footer section expanded" id="footer">
+  <div class="large-12 columns">
+    <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
+  </div>
+</div>
+
+<div style="display: none;">
+    <%= form_for(@quiz) do |f| %>
+    <%= f.text_field :result, :placeholder => "result", class: 'form-control', :id => "result" %>
+    <%= f.text_field :points, :placeholder => "points", class: 'form-control', :id => "points" %>
+    <%= f.check_box :knowledge, :id=> "knowledge"%>
+    <%= f.button "submit my test", type: "submit", :id => "submit", class: "button full-width icon-user-add" %>
+    <%end%>
+</div>
+
+    <script type="text/javascript">
+    <%= srand(Time.now.to_i) %>
+    var game = new Phaser.Game(1000, 600, Phaser.AUTO, 'game', { preload: preload, create: doNothing, update: update });
+    setTimeout(IntroCreate,3000);
+    var loading;
+    var loadingFrame = 3;
+    var loadingCounter = 0;
+    var cursors;
+    var startBackground;
+    var startButton;
+    var timerText;
+    var time;
+    var Popup;
+    var allQuestions = <%= raw @questions.to_json %>;
+    var allAnswers = <%= raw @answers.to_json %>;
+    var choice2 = <%= raw @choice2.to_json %>;
+    var choice3 = <%= raw @choice3.to_json %>;
+    var choice4 = <%= raw @choice4.to_json %>;
+    var allCategories = <%= raw @categories.to_json %>;
+    var orderOfQuestions = <%= raw (0..@answers.length-1).to_a.shuffle %>;
+    var images = <%= raw @images.to_json %>
+    var currentImage;
+    var currentQuestion = 0;
+    var correctAnswer;
+    var questionText;
+    var answerText = [];
+    var normalStyle; 
+    var hoverStyle;
+    var result;
+    var points;
+
+    function preload() {
+        game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
+        game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143);
+        game.load.image('traffic_1', '<%= asset_path 'traffic_1.png' %>');
+        game.load.image('traffic_2', '<%= asset_path 'traffic_2.png' %>');
+        game.load.image('traffic_3', '<%= asset_path 'traffic_3.png' %>');
+        game.load.image('traffic_4', '<%= asset_path 'traffic_4.png' %>');
+        game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
+        game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
+        game.load.image('asfalt', '<%= asset_path 'plain-road.png' %>');
+
+        <% for x in @images %>
+        game.load.image('<%= x %>','<%= asset_path x %>');
+        <% end %>
+    }
+
+    function doNothing(){
+        loadingCounter = -1;
+    }
+
+    function IntroCreate(){
+      start = false;
+      startBackground = game.add.sprite(0,0,'white_background');
+      startBackground.scale.setTo(4,4);
+      loading = game.add.sprite(450,100,'traffic_1');
+      setTimeout(loadingAnimation,500);
+    }
+
+    function loadingAnimation(){
+        if(loadingCounter == 0){
+            game.add.sprite(450,100,'traffic_2');
+        }
+        if(loadingFrame == 2){
+            loadingFrame++;
+            loading.destroy();
+        }else if(loadingFrame == 3){
+            loadingFrame--;
+            loading = game.add.sprite(451,178,'traffic_3');
+        }
+        if(loadingCounter == -1){
+            loading = game.add.sprite(450,100,'traffic_4');
+            startButton = game.add.button(300,350,'button-start',IntroDestroy,this,1,0,2);
+            return;
+        }
+        loadingCounter++;
+        setTimeout(loadingAnimation,350);
+    }
+
+    function IntroDestroy(){     
+        startButton.destroy();
+        create();
+    }
+
+    function create() {
+
+    //  We're going to be using physics, so enable the Arcade Physics system
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //  A simple background for our game
+    createPopup();
+}
+
+function update() {
+}
+
+function createPopup(){
+    Popup = game.add.sprite(game.world.centerX+20, game.world.centerY+30, 'popup');
+    Popup.alpha = 0.8;
+    Popup.anchor.set(0.5);
+    Popup.inputEnabled = true;
+    normalStyle = { font: "20px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, boundsAlignH : "right", align: "center" };
+    hoverStyle = { font: "20px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" };
+    //Popup.input.enableDrag();
+
+    //  And click the close button to close it down again
+    Popup.scale.setTo(2,1.1);
+    answerText[0] = game.add.text(+235, +-50, "Answer 1", normalStyle);
+    answerText[0].inputEnabled = true;
+    answerText[0].events.onInputDown.add(GiveAnswer, this);
+    answerText[0].input.priorityID = 1;
+    answerText[0].input.useHandCursor = true;
+    answerText[0].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[0].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[0].anchor.setTo(1,0);
+    Popup.addChild(answerText[0]);
+
+    answerText[1] = game.add.text(+235, +20, "Answer 2", normalStyle);
+    answerText[1].inputEnabled = true;
+    answerText[1].events.onInputDown.add(GiveAnswer, this);
+    answerText[1].input.priorityID = 1;
+    answerText[1].input.useHandCursor = true;
+    answerText[1].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[1].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[1].anchor.setTo(1,0);
+    Popup.addChild(answerText[1]);
+
+    answerText[2] = game.add.text(+235, +90, "Answer 3", normalStyle);
+    answerText[2].inputEnabled = true;
+    answerText[2].events.onInputDown.add(GiveAnswer, this);
+    answerText[2].input.priorityID = 1;
+    answerText[2].input.useHandCursor = true;
+    answerText[2].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[2].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[2].anchor.setTo(1,0);
+    Popup.addChild(answerText[2]);
+
+    answerText[3] = game.add.text(+235, +160, "Answer 4", normalStyle);
+    answerText[3].inputEnabled = true;
+    answerText[3].events.onInputDown.add(GiveAnswer, this);
+    answerText[3].input.priorityID = 1;
+    answerText[3].input.useHandCursor = true;
+    answerText[3].events.onInputOver.add(AnswerHoverIn, this);
+    answerText[3].events.onInputOut.add(AnswerHoverOut, this);
+    answerText[3].anchor.setTo(1,0);
+    Popup.addChild(answerText[3]);
+
+    currentImage = game.add.sprite(0,0,'');
+
+    questionText = game.add.text(0, -200, " Question " + '', hoverStyle);
+    questionText.anchor.set(0.5);
+    Popup.addChild(questionText);
+    result = "";
+    points = 0;
+    NextQuestion();
+    Popup.visible = true;
+}
+
+
+function NextQuestion(){
+    blockAnswer = false;
+    questionText.text = allQuestions[currentQuestion];
+    for(i = 0; i < 4; i ++){
+        answerText[i].text = '';
+        answerText[i].setStyle(normalStyle);
+    }
+    currentImage.destroy();
+    currentImage = game.add.sprite(-200,-220,images[currentQuestion]);
+    Popup.addChild(currentImage);
+    correctAnswer = parseInt(Math.random()*3);
+    answerText[correctAnswer].text = allAnswers[currentQuestion];
+    var r;
+    while(true){
+        r = parseInt(Math.random()*3);
+        if(answerText[r].text == ''){
+            break;
+        }
+    }
+    answerText[r].text = choice2[currentQuestion];
+    while(true){
+        r = parseInt(Math.random()*3);
+        if(answerText[r].text == ''){
+            break;
+        }
+    }
+    answerText[r].text = choice3[currentQuestion];
+    answerText[3].text = choice4[currentQuestion];
+    currentQuestion++;
+    if(currentQuestion >= allQuestions.length){
+        fillForm();
+    }
+}
+
+function GiveAnswer(answer){
+    if(blockAnswer)
+        return;
+    answer.setStyle(hoverStyle);
+    result+="Q"+currentQuestion+"-";
+    if(answer.text == answerText[correctAnswer].text){
+        result+= "A1";
+        points+=1;
+    }else if(answer.text == choice2[currentQuestion]){
+        result+="A2";
+    }else if(answer.text == choice3[currentQuestion]){
+        result+="A3";
+    }else if(answer.text == choice4[currentQuestion]){
+        result+="A4";
+    }
+    result+=","
+    setTimeout(NextQuestion,500);
+}
+
+function AnswerHoverIn(answer){
+    if(blockAnswer)
+        return;
+    answer.setStyle(hoverStyle)
+}
+
+function AnswerHoverOut(answer){
+    if(blockAnswer)
+        return;
+    answer.setStyle(normalStyle)
+}
+
+function startTimer(t){
+    timerText = game.add.bitmapText(180, 0, 'desyrel', '', 33);
+    time = t;
+    updateTimer();
+}
+
+function updateTimer(){
+    if(time > 0){
+        time -= 1;
+        timerText.text = 'Time: ' + time;
+        setTimeout(updateTimer,1000);
+    }else{
+        timerText.text = '';
+        createSource();
+        hidePopup();
+    }
+}
+
+function fillForm(){
+    document.getElementById("points").value = points;
+    document.getElementById("result").value = result;
+    document.getElementById("knowledge").checked = true;
+    document.getElementById("submit").click();
+}
+
+</script>
+</body>
+</html>

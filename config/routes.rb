@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'quizzes/index'
+  get 'quizzes/knowledge'
+  get 'quizzes/flow'
+
   get 'questions/index'
 
   get 'sessions/new'
@@ -24,6 +28,7 @@ Rails.application.routes.draw do
 
 
   resources :users
+  resources :quizzes
   resources :account_activations, only: [:edit]
 
   # The priority is based upon order of creation: first created -> highest priority.
