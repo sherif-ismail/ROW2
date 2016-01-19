@@ -23,8 +23,8 @@ end
 private
 
 	def user_params
-		params.require(:user).permit(:name, :email, :password,
-			:password_confirmation,:driving,:License)
+		params.require(:user).permit(:name, :age, :email, :password,
+			:password_confirmation,:gameteam,:driving,:license)
 	end
 
 

@@ -10,6 +10,29 @@
     </style>
 </head>
 <body>
+      <header>
+<div class="row full-width center-parent" id="header2" >
+  <div class="small-5 columns small-center">
+    <h1 class="" style="font-size:50px">Rules On Wheels</h1>
+  </div>
+  <div class="small-5 columns small-centered" style:"vertical-align: bottom">
+  <div class="top-bar-right" style:"vertical-align: bottom">
+    <ul class="menu" style:"vertical-align: bottom">
+      <% if logged_in? %>
+       <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=game_path%>  id="playButton"><i class="icon-gamepad"></i>Play</a></li>
+        <li><a class="" href=<%=quiz_path%>  id="playButton"><i class="icon-gamepad"></i>Quiz</a></li>
+        <li><%= link_to "Log out", logout_path, method: "delete", id: "playButton", class: "icon-cancel-squared"%></li>
+    <% else %>
+        <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=login_path%> id="playButton"><i class="icon-lock"></i>Log in</a></li>
+        <li><a class="" href=<%=signup_path%> id="playButton"><i class="icon-user-add"></i>Sign up</a></li>
+    <% end %>
+    </ul>
+  </div>
+  </div>
+</div>
+  </header>
 <div class="row expanded section" >
   <div class="large-12 columns small-centered" id="game">
 
@@ -37,8 +60,8 @@
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
     var game = new Phaser.Game(1000, 600, Phaser.AUTO, 'game', { preload: preload, create: doNothing, update: update });
-    setTimeout(IntroCreate,1000);
-    var sessionTime = 600;
+    setTimeout(IntroCreate,5000);
+    var sessionTime = 900;
     var sessionText;
     var sessionTimer;
     var examTimer;
@@ -234,7 +257,7 @@
     // game.add.text(420, 5, 'Nitro: 60', { fontSize: '32px', fill: '#FFFFFF',  });
     msgText = game.add.text(640, 0, 'Get Out!', barStyle);
 
-    timerText = game.add.text(500, 2, '', timeStyle);
+    timerText = game.add.text(505, 2, '', timeStyle);
 
     msgText.visible = false;
     //  Our controls.
@@ -766,7 +789,7 @@ function update() {
     var reverse = false;
     //car.angle -= 90;
 
-    directionSpeed = 300;
+    directionSpeed = 150;
 
     if(game.input.keyboard.isDown(Phaser.Keyboard.SHIFT) && nitroLeft > 0 && game.input.keyboard.isDown(Phaser.Keyboard.UP) && Popup.visible == false){
         nitro = true;
@@ -815,6 +838,8 @@ function update() {
     if(inArea()){
         msgText.visible = true;
     }
+
+    directionSpeed += (speed*speed)/(speed*5);
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
     {
@@ -893,8 +918,8 @@ function createPopup(){
 
     currentImage = game.add.sprite(0,0,'');
 
-    questionText = game.add.text(0, -200, " Question " + '', hoverStyle);
-    questionText.anchor.set(0.5);
+    questionText = game.add.text(+150, -200, " Question " + '', hoverStyle);
+    questionText.anchor.set(1,0);
     Popup.addChild(questionText);
     NextQuestion()
     Popup.visible = false;
@@ -963,13 +988,13 @@ function createClocks(){
     clocks.create(200,550,'clock');
     clocks.create(370,450,'clock');
     clocks.create(550,450,'clock');
+    clocks.create(90,450,'clock');
     clocks.create(730,450,'clock');
     clocks.create(940,450,'clock');
     clocks.create(150,290,'clock');
     clocks.create(10,290,'clock');
     clocks.create(750,290,'clock');
     clocks.create(930,290,'clock');
-    clocks.create(90,450,'clock');
     clocks.create(280,240,'clock');
     clocks.create(450,240,'clock');
     clocks.create(650,240,'clock');
@@ -991,8 +1016,12 @@ function createClocks(){
 }
 
 function collectClock(car,clock){
-    if(clock.visible == true)
-        time+=1;
+    if(clock.visible == true){
+        time+=2;
+        timerText.text = '' + time;
+        var tempText = game.add.text(clock.x,clock.y,'+2s',{ font:"Lobster", fontSize: '30px', fill: '#e7d94c' });
+        setTimeout(function(){ tempText.destroy(); },1500);    
+    }
     clock.destroy();
 }
 
@@ -1168,7 +1197,7 @@ function collectDestination (){
     scoreText.text = 'Score: ' + score;
     collected = true;
     clocks.destroy();
-    if(time == 0){
+    if(time <= 0){
         startTimer(40);
     }else{
         time+= 40;
@@ -1190,6 +1219,10 @@ function updateTimer(){
         createSource();
         hidePopup();
     }
+}
+
+function destroyText(text){
+    text.destroy();
 }
 
 function updateSpeed(){
