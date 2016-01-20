@@ -14,7 +14,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'fontello';
-    src: url('../font/fontello.svg?35313998#fontello') format('svg');
+    src: url('../font/fontello.svg?46268738#fontello') format('svg');
   }
 }
 */
@@ -54,17 +54,22 @@
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
  
-.icon-newspaper:before { content: '\e800'; } /* '' */
+.icon-expand:before { content: '\e800'; } /* '' */
 .icon-home:before { content: '\e801'; } /* '' */
 .icon-user-add:before { content: '\e802'; } /* '' */
 .icon-cancel-squared:before { content: '\e803'; } /* '' */
-.icon-cancel-circled:before { content: '\e804'; } /* '' */
 .icon-lock:before { content: '\e805'; } /* '' */
 .icon-lock-open:before { content: '\e806'; } /* '' */
 .icon-gamepad:before { content: '\e807'; } /* '' */
 .icon-heart:before { content: '\e808'; } /* '' */
 .icon-info:before { content: '\e809'; } /* '' */
 .icon-cab:before { content: '\e80a'; } /* '' */
-.icon-taxi:before { content: '\e80b'; } /* '' */
 .icon-ok:before { content: '\e80c'; } /* '' */
 .icon-steering-wheel:before { content: '\e80d'; } /* '' */
+.icon-book:before { content: '\e80e'; } /* '' */
+.icon-expand-right:before { content: '\e80f'; } /* '' */
+.icon-collapse:before { content: '\e810'; } /* '' */
+.icon-collapse-left:before { content: '\e812'; } /* '' */
+.icon-up-bold:before { content: '\e813'; } /* '' */
+.icon-crown:before { content: '\e814'; } /* '' */
+.icon-doc-text:before { content: '\e815'; } /* '' */

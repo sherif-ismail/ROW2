@@ -10,18 +10,19 @@
     </style>
 </head>
 <body>
-      <header>
+    <header>
 <div class="row full-width center-parent" id="header2" >
   <div class="small-5 columns small-center">
-    <h1 class="" style="font-size:50px">Rules On Wheels</h1>
+    <h1 class="" style="font-size:45px">Rules On Wheels</h1>
   </div>
-  <div class="small-5 columns small-centered" style:"vertical-align: bottom">
+  <div class="small-6 columns small-centered" style:"vertical-align: bottom">
   <div class="top-bar-right" style:"vertical-align: bottom">
     <ul class="menu" style:"vertical-align: bottom">
       <% if logged_in? %>
        <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
-        <li><a class="" href=<%=game_path%>  id="playButton"><i class="icon-gamepad"></i>Play</a></li>
-        <li><a class="" href=<%=quiz_path%>  id="playButton"><i class="icon-gamepad"></i>Quiz</a></li>
+        <li style="background-color:#f1c40f;color:#333;"><a class="" style="background-color:#f1c40f;color:#333;" href=<%=game_path%>  id="playButton"><i class="icon-gamepad"></i>Play</a></li>
+        <li><a class="" href=<%=highscores_path%>  id="playButton"><i class="icon-up-bold"></i>Top 10</a></li>
+        <li><a class="" href=<%=quiz_path%>  id="playButton"><i class="icon-doc-text"></i>Quiz</a></li>
         <li><%= link_to "Log out", logout_path, method: "delete", id: "playButton", class: "icon-cancel-squared"%></li>
     <% else %>
         <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
@@ -33,6 +34,10 @@
   </div>
 </div>
   </header>
+  <div id = "udpatescorediv" style="display: none;">
+    <%=link_to('ss', user_path(current_user, score: 123121), method: 'put', id: 'updatescore')%>
+  </div>
+
 <div class="row expanded section" >
   <div class="large-12 columns small-centered" id="game">
 
@@ -173,13 +178,6 @@
     }
 
     function IntroCreate(){
-      start = false;
-      startBackground = game.add.sprite(0,0,'white_background');
-      startBackground.scale.setTo(4,4);
-      loading = game.add.sprite(430,120,'traffic_1');
-      setTimeout(loadingAnimation,500);
-      game.add.text(350, 0, 'Rules on Wheels', { font:"Lobster", fontSize: '40px', fill: '#000000' });
-      loadingText = game.add.text(380, 50, 'loading....', { font:"Lobster", fontSize: '40px', fill: '#000000' });
       WebFontConfig = {
       google: { families: [ 'Exo:600:latin' ] }
       };
@@ -192,6 +190,13 @@
       var s = document.getElementsByTagName('script')[0];
       s.parentNode.insertBefore(wf, s);
       })();
+      start = false;
+      startBackground = game.add.sprite(0,0,'white_background');
+      startBackground.scale.setTo(4,4);
+      loading = game.add.sprite(430,120,'traffic_1');
+      setTimeout(loadingAnimation,500);
+      game.add.text(350, 0, 'Rules on Wheels', { font:"Lobster", fontSize: '40px', fill: '#000000' });
+      loadingText = game.add.text(380, 50, 'loading....', { font:"Lobster", fontSize: '40px', fill: '#000000' });
      }
 
     function loadingAnimation(){
@@ -287,7 +292,7 @@
     nitroTank.anchor.setTo(0,0);
     nitroTank.scale.setTo(0.25,0.15);
 
-    setInterval(updateNitro,100)
+    setInterval(updateNitro,150)
     setInterval(updateSpeed,100)
     setInterval(displaySessionTime,1000);
 }
@@ -841,22 +846,27 @@ function update() {
 
     directionSpeed += (speed*speed)/(speed*5);
 
-    if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
-    {
-        if(move){
-            car.body.angularVelocity = -directionSpeed ;
-        }else if(reverse){
-            car.body.angularVelocity = +directionSpeed ;
+    if(speed > 0 && move){
+        if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
+        {
+                car.body.angularVelocity = -directionSpeed ;            
+        }
+        else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && Popup.visible == false )
+        {
+                car.body.angularVelocity = +directionSpeed ;              
+        }
+    }else if(speed <0 && reverse){
+        if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) && Popup.visible == false)
+        {
+                car.body.angularVelocity = +directionSpeed ;            
+        }
+        else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && Popup.visible == false )
+        {
+                car.body.angularVelocity = -directionSpeed ;              
         }
     }
-    else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && Popup.visible == false)
-    {
-        if(move){
-            car.body.angularVelocity = +directionSpeed ;
-        }else if(reverse){
-            car.body.angularVelocity = -directionSpeed ;
-        }    
-    }
+
+
 
     game.physics.arcade.velocityFromAngle(car.angle-90, speed, car.body.velocity);  
 
@@ -918,7 +928,7 @@ function createPopup(){
 
     currentImage = game.add.sprite(0,0,'');
 
-    questionText = game.add.text(+150, -200, " Question " + '', hoverStyle);
+    questionText = game.add.text(+220, -170, " Question " + '', { font: "24px Arial", fill: "#fbcd11", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" } );
     questionText.anchor.set(1,0);
     Popup.addChild(questionText);
     NextQuestion()
@@ -939,7 +949,7 @@ function NextQuestion(){
         answerText[i].setStyle(normalStyle);
     }
     currentImage.destroy();
-    currentImage = game.add.sprite(-200,-220,images[orderOfQuestions[currentQuestion]]);
+    currentImage = game.add.sprite(-100,-220,images[orderOfQuestions[currentQuestion]]);
     Popup.addChild(currentImage);
     correctAnswer = parseInt(Math.random()*4);
     answerText[correctAnswer].text = allAnswers[orderOfQuestions[currentQuestion]];
@@ -950,7 +960,7 @@ function NextQuestion(){
                 r = parseInt(Math.random()*allAnswers.length);
                 var duplicate = false;
                 for(j = 0; j < 4; j++){
-                    if(allAnswers[r] == answerText[j].text || allCategories[r] != allCategories[correctAnswer])
+                    if(allAnswers[r] == answerText[j].text || allCategories[r] != allCategories[correctAnswer] || allAnswers[r].length > 50)
                         duplicate = true;
                 }
                 if(!duplicate)
@@ -1035,7 +1045,10 @@ function GiveAnswer(answer){
     answer.setStyle(wrongStyle);
     answerText[correctAnswer].setStyle(correctStyle);
     scoreText.text = 'Score: ' + score;
-    setTimeout(NextQuestion,3500-(45*(score-old)))
+    var longAnswer = 0;
+    if(answerText[correctAnswer].text.length >= 50)
+        longAnswer = 1500
+    setTimeout(NextQuestion,(3500+longAnswer)-(40*(score-old)))
 }
 
 function AnswerHoverIn(answer){
@@ -1193,7 +1206,7 @@ function collectDestination (){
     destAnimation = false;
     currentDestination.destroy();
     Popup.visible = true;
-    score += 20*time;
+    score += 50*time;
     scoreText.text = 'Score: ' + score;
     collected = true;
     clocks.destroy();
@@ -1243,7 +1256,15 @@ function gameOver(){
     game.add.text(300, 10, 'Game Over', { font:"Lobster", fontSize: '90px', fill: '#000000' });
     game.add.text(200, 310, 'Sc or e', { font:"Lobster", fontSize: '90px', fill: '#000000' });
     game.add.text(510, 310, score, { font:"Lobster", fontSize: '90px', fill: '#000000' });
-    alert(currentQuestion);
+    //alert(currentQuestion);
+    //setTimeout(updateUser,5000);
+}
+
+function updateUser(){
+    var userScore = ""+ document.getElementById("updatescore").innnerHtml;
+    alert(userScore);
+    userScore.replace("score=12312121","score="+score);
+    //document.getElementById('updatescore').click();
 }
 
 </script>

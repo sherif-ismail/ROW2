@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   get 'quiz' => 'quizzes#index'
   get 'kquiz' => 'quizzes#knowledge'
   get 'fquiz' => 'quizzes#flow'
+  get 'highscores' => 'users#highscores'
   get    'login'   => 'sessions#new'
   post   'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'

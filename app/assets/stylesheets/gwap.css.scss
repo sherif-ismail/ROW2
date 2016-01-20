@@ -84,7 +84,7 @@ h1{
 
 #header2{
 	background-color:#333;
-	border-bottom:2px solid #F1C40F;
+	border-bottom:3px solid #F1C40F;
 }
 
 #header p{
@@ -92,7 +92,11 @@ h1{
 }
 
 a{
-	text-decoration: none !important	
+	text-decoration: none !important
+}
+
+li{
+	height: 70px;
 }
 
 a:hover{
@@ -100,7 +104,8 @@ a:hover{
 }
 
 li:hover{
-	background-color:#f1c40f
+	background-color:#f1c40f;
+	color:#333;	
 }
 
 .checkbox{
@@ -108,5 +113,5 @@ li:hover{
 }
 
 #playButton{
-	font-size:20px;
+	font-size:19px;
 }
