@@ -84,11 +84,28 @@ h1{
 
 #header2{
 	background-color:#333;
-	border-bottom:2px solid #F1C40F;
+	border-bottom:3px solid #F1C40F;
 }
 
 #header p{
 	/*background-color:rgba(33,33,33,0.7);*/
+}
+
+a{
+	text-decoration: none !important
+}
+
+li{
+	height: 70px;
+}
+
+a:hover{
+	color:#333	
+}
+
+li:hover{
+	background-color:#f1c40f;
+	color:#333;	
 }
 
 .checkbox{
@@ -96,5 +113,5 @@ h1{
 }
 
 #playButton{
-	font-size:20px;
+	font-size:19px;
 }

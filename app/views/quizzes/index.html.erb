@@ -1,8 +1,37 @@
+<header>
+<div class="row full-width center-parent" id="header2" >
+  <div class="small-5 columns small-center">
+    <h1 class="" style="font-size:45px">Rules On Wheels</h1>
+  </div>
+  <div class="small-6 columns small-centered" style:"vertical-align: bottom">
+  <div class="top-bar-right" style:"vertical-align: bottom">
+    <ul class="menu" style:"vertical-align: bottom">
+      <% if logged_in? %>
+       <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=game_path%>  id="playButton"><i class="icon-gamepad"></i>Play</a></li>
+        <li><a class="" href=<%=highscores_path%>  id="playButton"><i class="icon-up-bold"></i>Top 10</a></li>
+        <li style="background-color:#f1c40f;color:#333;"><a class="" style="background-color:#f1c40f;color:#333;"href=<%=quiz_path%>  id="playButton"><i class="icon-doc-text"></i>Quiz</a></li>
+        <li><%= link_to "Log out", logout_path, method: "delete", id: "playButton", class: "icon-cancel-squared"%></li>
+    <% else %>
+        <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=login_path%> id="playButton"><i class="icon-lock"></i>Log in</a></li>
+        <li><a class="" href=<%=signup_path%> id="playButton"><i class="icon-user-add"></i>Sign up</a></li>
+    <% end %>
+    </ul>
+  </div>
+  </div>
+</div>
+</header>
 <div class="row full-width center" id="header" >
   <div class="small-5 columns small-centered">
     <h1 class="title">Quiz</h1>
     <p>There are two types of quizzes. The knowledge quiz is dedicated to evaluate your knowedge in the traffic laws. The flow quiz is dedicated to evaluate how much you enjoyed playing the game. The flow quiz should only be taken after you play the game.</p>
-    <a class="button" href= <%= kquiz_path%> id="playButton"><i class="icon-newspaper"></i>Knowledge Quiz</a>
-    <a class="button" href= <%= fquiz_path %> id="playButton"><i class="icon-newspaper"></i>Flow Quiz</a>
+    <a class="button" href= <%= kquiz_path%> id="playButton"><i class="icon-book"></i>Knowledge Quiz</a>
+    <a class="button" href= <%= fquiz_path %> id="playButton"><i class="icon-heart"></i>Flow Quiz</a>
+  </div>
+</div>
+<div class="row footer section expanded" id="footer">
+  <div class="large-12 columns">
+    <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
   </div>
 </div>

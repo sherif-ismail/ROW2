@@ -18,13 +18,28 @@ class UsersController < ApplicationController
       flash[:danger] = "Something went wrong, please try again later"
 		  render 'new'
 	   end
-end
+  end
+
+  def highscores
+    @users = User.all
+    @users = @users.sort_by{|e| -e[:score]}
+  end
+
+  def update
+    @user = current_user
+    @user.score = params[:score]
+    if @user.save
+      render 'show'
+    else
+      render 'show'
+    end
+  end
 
 private
 
 	def user_params
-		params.require(:user).permit(:name, :email, :password,
-			:password_confirmation,:driving,:License)
+		params.require(:user).permit(:name, :age, :email, :password,
+			:password_confirmation,:gameteam,:driving,:license,:score)
 	end
 
 

@@ -15,6 +15,7 @@
               <%= form_for(@user) do |f| %>
                 <%= render 'shared/error_messages' %>
                 <%= f.text_field :name, :placeholder => "Name", class: 'form-control' %>
+                <%= f.text_field :age, :value => '', :placeholder => "Age", class: 'form-control' %>
                 <%= f.email_field :email, :placeholder => "Email", class: 'form-control' %>
                 <%= f.password_field :password, :placeholder => "Password", class: 'form-control' %>
                 <%= f.password_field :password_confirmation, :placeholder => "Password Confirmation", class: 'form-control' %>
@@ -22,6 +23,8 @@
                 <%= f.check_box :driving%>
                 <%= f.label :license, "Do you have a license?", class: "checkbox" %>
                 <%= f.check_box :license%>
+                <%= f.label :gameteam, "Are you on the game team?", class: "checkbox"%>
+                <%= f.check_box :gameteam%>
                 <%= f.button "Create my account", type: "submit", class: "button full-width icon-user-add" %>
               <% end %>
                 <%= link_to "Home", root_path, class: "button secondary full-width icon-home" %>           

@@ -9,6 +9,30 @@
     }
     </style>
 </head>
+<header>
+<div class="row full-width center-parent" id="header2" >
+  <div class="small-5 columns small-center">
+    <h1 class="" style="font-size:45px">Rules On Wheels</h1>
+  </div>
+  <div class="small-6 columns small-centered" style:"vertical-align: bottom">
+  <div class="top-bar-right" style:"vertical-align: bottom">
+    <ul class="menu" style:"vertical-align: bottom">
+      <% if logged_in? %>
+       <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=game_path%>  id="playButton"><i class="icon-gamepad"></i>Play</a></li>
+        <li><a class="" href=<%=highscores_path%>  id="playButton"><i class="icon-up-bold"></i>Top 10</a></li>
+        <li style="background-color:#f1c40f;color:#333;"><a class="" style="background-color:#f1c40f;color:#333;"href=<%=quiz_path%>  id="playButton"><i class="icon-doc-text"></i>Quiz</a></li>
+        <li><%= link_to "Log out", logout_path, method: "delete", id: "playButton", class: "icon-cancel-squared"%></li>
+    <% else %>
+        <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=login_path%> id="playButton"><i class="icon-lock"></i>Log in</a></li>
+        <li><a class="" href=<%=signup_path%> id="playButton"><i class="icon-user-add"></i>Sign up</a></li>
+    <% end %>
+    </ul>
+  </div>
+  </div>
+</div>
+</header>
 <body>
 <div class="row expanded section" >
   <div class="large-12 columns small-centered" id="game">
@@ -33,7 +57,8 @@
     <script type="text/javascript">
     <%= srand(Time.now.to_i) %>
     var game = new Phaser.Game(1000, 600, Phaser.AUTO, 'game', { preload: preload, create: doNothing, update: update });
-    setTimeout(IntroCreate,3000);
+    setTimeout(IntroCreate,5000);
+    var answeredQuestions = 0;
     var loading;
     var loadingFrame = 3;
     var loadingCounter = 0;
@@ -111,6 +136,8 @@
 
     function IntroDestroy(){     
         startButton.destroy();
+        startBackground = game.add.sprite(0,0,'white_background');
+        startBackground.scale.setTo(4,4);
         create();
     }
 
@@ -179,7 +206,7 @@ function createPopup(){
 
     currentImage = game.add.sprite(0,0,'');
 
-    questionText = game.add.text(0, -200, " Question " + '', hoverStyle);
+    questionText = game.add.text(+140, -160, " Question " + '', { font: "24px Arial", fill: "#fbcd11", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" } );
     questionText.anchor.set(0.5);
     Popup.addChild(questionText);
     result = "";
@@ -197,7 +224,7 @@ function NextQuestion(){
         answerText[i].setStyle(normalStyle);
     }
     currentImage.destroy();
-    currentImage = game.add.sprite(-200,-220,images[currentQuestion]);
+    currentImage = game.add.sprite(-100,-220,images[currentQuestion]);
     Popup.addChild(currentImage);
     correctAnswer = parseInt(Math.random()*3);
     answerText[correctAnswer].text = allAnswers[currentQuestion];
@@ -217,15 +244,12 @@ function NextQuestion(){
     }
     answerText[r].text = choice3[currentQuestion];
     answerText[3].text = choice4[currentQuestion];
-    currentQuestion++;
-    if(currentQuestion >= allQuestions.length){
-        fillForm();
-    }
 }
 
 function GiveAnswer(answer){
     if(blockAnswer)
         return;
+    answeredQuestions++;
     answer.setStyle(hoverStyle);
     result+="Q"+currentQuestion+"-";
     if(answer.text == answerText[correctAnswer].text){
@@ -239,6 +263,12 @@ function GiveAnswer(answer){
         result+="A4";
     }
     result+=","
+    currentQuestion+=10;
+    if(currentQuestion == 119){
+        fillForm();
+    }else if(currentQuestion > 110){
+        currentQuestion = (currentQuestion % 10) + 1;
+    }
     setTimeout(NextQuestion,500);
 }
 
@@ -273,6 +303,7 @@ function updateTimer(){
 }
 
 function fillForm(){
+    alert(answeredQuestions);
     document.getElementById("points").value = points;
     document.getElementById("result").value = result;
     document.getElementById("knowledge").checked = true;

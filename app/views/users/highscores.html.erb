@@ -1,0 +1,61 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<header>
+<div class="row full-width center-parent" id="header2" >
+  <div class="small-5 columns small-center">
+    <h1 class="" style="font-size:45px">Rules On Wheels</h1>
+  </div>
+  <div class="small-6 columns small-centered" style:"vertical-align: bottom">
+  <div class="top-bar-right" style:"vertical-align: bottom">
+    <ul class="menu" style:"vertical-align: bottom">
+      <% if logged_in? %>
+       <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=game_path%>  id="playButton"><i class="icon-gamepad"></i>Play</a></li>
+        <li style="background-color:#f1c40f;color:#333;"><a class="" style="background-color:#f1c40f;color:#333;" href=<%=highscores_path%>  id="playButton"><i class="icon-up-bold"></i>Top 10</a></li>
+        <li><a class="" href=<%=quiz_path%>  id="playButton"><i class="icon-doc-text"></i>Quiz</a></li>
+        <li><%= link_to "Log out", logout_path, method: "delete", id: "playButton", class: "icon-cancel-squared"%></li>
+    <% else %>
+        <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=login_path%> id="playButton"><i class="icon-lock"></i>Log in</a></li>
+        <li><a class="" href=<%=signup_path%> id="playButton"><i class="icon-user-add"></i>Sign up</a></li>
+    <% end %>
+    </ul>
+  </div>
+  </div>
+</div>
+</header>
+  <body>
+  <h1 style = "color:black"><i class="icon-crown"></i>Top 10 Players</h1>
+    <div style="display: none;">
+    <%= rank = 1 %>
+    </div>
+    <% @users.each do |user| %>
+    <div class="row section">
+      <div class="large-12 columns">
+        <div class="row">
+          <div class="large-2 columns">
+            <h1 style="color:black;font-size:30px"><%=rank%></h1>
+          </div>  
+          <div class="large-2 columns">
+            <h1 style="color:black;font-size:20px"><%=user.name%></h1>
+          </div>            
+          <div class="large-2 columns">
+            <h1 style="color:black;font-size:30px"><%=user.score%></h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% if rank == 10 %>
+    <%break%>
+    <%end%>
+    <div style="display: none;">
+    <%= rank = rank + 1 %>
+    </div>
+    <%end%>
+  </body>
+    <div class="row footer section expanded" id="footer">
+      <div class="large-12 columns">
+        <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
+      </div>
+    </div>
+</html>
