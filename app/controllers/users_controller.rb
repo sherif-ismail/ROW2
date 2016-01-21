@@ -29,11 +29,9 @@ class UsersController < ApplicationController
 
   def update
     @user = current_user
-    @user.score = params[:score]
-    if @user.save
-      redirect_to root_url
-    else
-      redirect_to root_url
+    if @user.score < params[:score].to_i
+      @user.score = params[:score]
+      @user.save!
     end
   end
 

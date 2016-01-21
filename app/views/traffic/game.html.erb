@@ -1257,14 +1257,21 @@ function gameOver(){
     game.add.text(200, 310, 'Sc or e', { font:"Lobster", fontSize: '90px', fill: '#000000' });
     game.add.text(510, 310, score, { font:"Lobster", fontSize: '90px', fill: '#000000' });
     //alert(currentQuestion);
-    //setTimeout(updateUser,5000);
+    setTimeout(updateUser,5000);
 }
 
-function updateUser(){
-    var userScore = ""+ document.getElementById("updatescore").innnerHtml;
-    alert(userScore);
-    userScore.replace("score=12312121","score="+score);
-    //document.getElementById('updatescore').click();
+
+function updateUser() {
+    $.rails.ajax({
+        url: '<%= user_path(current_user) %>',
+        method: 'patch',
+        data: {
+            score: score
+        },
+        complete: function() {
+            location.href = '<%= highscores_path %>'
+        }
+    });
 }
 
 </script>
