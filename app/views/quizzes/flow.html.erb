@@ -1,2 +1,75 @@
-<h1>Quizzes#index</h1>
-<p>Find me in app/views/quizzes/index.html.erb</p>
+<script>
+function fillForm(){
+    document.getElementById("result").value = "Q1A" + document.getElementById("challenge").value + "Q2A" + document.getElementById("skills").value;
+    document.getElementById("flow").checked = true;
+    document.getElementById("submit").click();
+}
+</script>
+<header>
+<div class="row full-width center-parent" id="header2" >
+  <div class="small-5 columns small-center">
+    <h1 class="" style="font-size:45px">Rules On Wheels</h1>
+  </div>
+  <div class="small-6 columns small-centered" style:"vertical-align: bottom">
+  <div class="top-bar-right" style:"vertical-align: bottom">
+    <ul class="menu" style:"vertical-align: bottom">
+      <% if logged_in? %>
+       <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=game_path%>  id="playButton"><i class="icon-gamepad"></i>Play</a></li>
+        <li><a class="" href=<%=highscores_path%>  id="playButton"><i class="icon-up-bold"></i>Top 10</a></li>
+        <li style="background-color:#f1c40f;color:#333;"><a class="" style="background-color:#f1c40f;color:#333;"href=<%=quiz_path%>  id="playButton"><i class="icon-doc-text"></i>Quiz</a></li>
+        <li><%= link_to "Log out", logout_path, method: "delete", id: "playButton", class: "icon-cancel-squared"%></li>
+    <% else %>
+        <li><a class="" href=<%=root_path%> id="playButton"><i class="icon-home"></i>Home</a></li>
+        <li><a class="" href=<%=login_path%> id="playButton"><i class="icon-lock"></i>Log in</a></li>
+        <li><a class="" href=<%=signup_path%> id="playButton"><i class="icon-user-add"></i>Sign up</a></li>
+    <% end %>
+    </ul>
+  </div>
+  </div>
+</div>
+</header>
+<div style="display: none;">
+    <%= form_for(@quiz) do |f| %>
+    <%= f.text_field :result, :placeholder => "result", class: 'form-control', :id => "result" %>
+    <%= f.check_box :flow, :id=> "flow"%>
+    <%= f.button "submit my test", type: "submit", :id => "submit", class: "button full-width icon-user-add" %>
+    <%end%>
+</div>
+<h1 class="" style = "color:black">Flow Quiz</h1>
+<div class="row">
+	<div class="large-6 columns large-centered">
+	  <label>How challenging did you find the last activity?
+	    <select id = "challenge">
+	      <option value="1">challenge too low</option>
+	      <option value="2">challenge low</option>
+	      <option value="3" selected="selected">challenge just right</option>
+	      <option value="4">challenge high</option>
+	      <option value="5">challenge too high</option>
+	    </select>
+	  </label>
+	</div>
+</div>
+<div class="row">
+	<div class="large-6 columns large-centered">
+	  <label>Were your skills appropriate for understanding this last activity?
+	    <select id="skills">
+	      <option value="1">my skills too low</option>
+	      <option value="2">my skills low</option>
+	      <option value="3" selected="selected">my skills just right</option>
+	      <option value="4">my skills high</option>
+	      <option value="5">my skills too high</option>
+	    </select>
+	  </label>
+	</div>
+</div>
+<div class="row">
+	<div class="large-3 columns large-centered">
+		<a class="button" onclick="fillForm()" id="playButton"><i class="icon-ok"></i>Submit Answer</a>
+	</div>
+</div>
+<div class="row footer section expanded" id="footer">
+  <div class="large-12 columns">
+    <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
+  </div>
+</div>

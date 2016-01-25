@@ -24,23 +24,24 @@
   </div>
 </div>
 </header>
-  <body>
-  <h1 style = "color:black"><i class="icon-crown"></i>Top 10 Players</h1>
+  <body style = "background-color:#333">
+  <div>  
+  <h1 style = "color:white;" id = "hhighscores"><i class="icon-crown" style="color:#dcdcdc"></i> Top 10 Players </h1>
     <div style="display: none;">
     <%= rank = 1 %>
     </div>
     <% @users.each do |user| %>
-    <div class="row section">
-      <div class="large-12 columns">
+    <div class="row section" >
+      <div class="large-8 columns large-centered" id="highscorecell">
         <div class="row">
           <div class="large-2 columns">
-            <h1 style="color:black;font-size:30px"><%=rank%></h1>
+            <b style="color:#dcdcdc;font-size:26px;text-align: center;"><%=rank%></b>
           </div>  
-          <div class="large-2 columns">
-            <h1 style="color:black;font-size:20px"><%=user.name%></h1>
+          <div class="large-4 columns">
+            <b style="color:#dcdcdc;font-size:26px;text-align: center;"><%=user.name%></b>
           </div>            
           <div class="large-2 columns">
-            <h1 style="color:black;font-size:30px"><%=user.score%></h1>
+            <b style="color:#dcdcdc;font-size:26px;text-align: center;"><%=user.score%></b>
           </div>
         </div>
       </div>
@@ -52,10 +53,11 @@
     <%= rank = rank + 1 %>
     </div>
     <%end%>
+  </div>  
   </body>
-    <div class="row footer section expanded" id="footer">
-      <div class="large-12 columns">
-        <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
-      </div>
+  <div class="" id="footer">
+    <div class="large-12 columns">
+      <p>Powered by the <b>GWAP</b> Cluster of the GUC</p>
     </div>
+  </div>
 </html>

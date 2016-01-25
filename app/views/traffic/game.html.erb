@@ -1027,7 +1027,11 @@ function createClocks(){
 
 function collectClock(car,clock){
     if(clock.visible == true){
-        time+=2;
+        if(time <= 0){
+           startTimer(2);
+        }else{
+            time+= 2;
+        }
         timerText.text = '' + time;
         var tempText = game.add.text(clock.x,clock.y,'+2s',{ font:"Lobster", fontSize: '30px', fill: '#e7d94c' });
         setTimeout(function(){ tempText.destroy(); },1500);    
@@ -1041,14 +1045,14 @@ function GiveAnswer(answer){
     blockAnswer = true;
     var old = score;
     if(answer.text == allAnswers[orderOfQuestions[currentQuestion-1]])
-        score += 50;
+        score += 100;
     answer.setStyle(wrongStyle);
     answerText[correctAnswer].setStyle(correctStyle);
     scoreText.text = 'Score: ' + score;
     var longAnswer = 0;
     if(answerText[correctAnswer].text.length >= 50)
         longAnswer = 1500
-    setTimeout(NextQuestion,(3500+longAnswer)-(40*(score-old)))
+    setTimeout(NextQuestion,(3500+longAnswer)-(20*(score-old)))
 }
 
 function AnswerHoverIn(answer){
@@ -1223,11 +1227,12 @@ function startTimer(t){
 }
 
 function updateTimer(){
-    if(time > 0){
+    if(time > 1){
         time -= 1;
         timerText.text = '' + time;
         setTimeout(updateTimer,1000);
     }else{
+        time = 0;
         timerText.text = '';
         createSource();
         hidePopup();

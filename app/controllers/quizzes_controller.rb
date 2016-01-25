@@ -44,6 +44,7 @@ class QuizzesController < ApplicationController
   end
 
   def flow
+    @quiz = Quiz.new
     unless logged_in?
       flash[:danger] = "Please log in."
       redirect_to login_url
