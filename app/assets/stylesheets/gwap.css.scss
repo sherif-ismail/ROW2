@@ -79,13 +79,13 @@ h1{
 }
 
 #highscorecell{
-  color: #333;
-  border: 2px solid #333;
-  border-image: repeating-linear-gradient( 45deg, #333, #333 2%, #F1C40F 2%, #F1C40F 6%) 5;
+  color: white;
+  border: 2px solid white;
+  border-image: repeating-linear-gradient( 45deg, white, white 2%, #333 2%, #333 6%) 5;
 }
 
 #highscorecell:hover{
-  border-image: repeating-linear-gradient( 45deg, #333, #333 3%, #F1C40F 2%, #F1C40F 5%) 5;
+  border-image: repeating-linear-gradient( 45deg, white, white 3%, #333 2%, #333 5%) 5;
 }
 
 #hhighscores{
