@@ -268,15 +268,18 @@
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
 
-    halos = game.add.group();
-    halos.enableBody = true;
-    createSource();
 
     // The car and its settings
     car = game.add.sprite(390,500, 'car');
     car.scale.setTo(0.05,0.05);
 
+    halos = game.add.group();
+    halos.enableBody = true;
+    createSource();
 
+    car.destroy();
+    car = game.add.sprite(390,500, 'car');
+    car.scale.setTo(0.05,0.05);
     //  We need to enable physics on the car
     game.physics.arcade.enable(car);
     car.body.collideWorldBounds = true;
@@ -1019,8 +1022,9 @@ function createClocks(){
     for(cl = 0; cl < 30; cl++){
         clocks.getChildAt(cl).visible = false;
     }
-    for(cl = 0; cl < 28; cl+=3){
-        var showClock = parseInt(Math.random()*3);
+    var step = parseInt((900 - sessionTime)/150) + 3;
+    for(cl = 0; cl < (31 - step); cl+=step){
+        var showClock = parseInt(Math.random()*step);
         clocks.getChildAt(cl+showClock).visible = true;
     }
 }
@@ -1033,7 +1037,7 @@ function collectClock(car,clock){
             time+= 2;
         }
         timerText.text = '' + time;
-        var tempText = game.add.text(clock.x,clock.y,'+2s',{ font:"Lobster", fontSize: '30px', fill: '#e7d94c' });
+        var tempText = game.add.text(clock.x,clock.y,'+2s',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
         setTimeout(function(){ tempText.destroy(); },1500);    
     }
     clock.destroy();
@@ -1044,8 +1048,20 @@ function GiveAnswer(answer){
         return;
     blockAnswer = true;
     var old = score;
-    if(answer.text == allAnswers[orderOfQuestions[currentQuestion-1]])
+    if(answer.text == allAnswers[orderOfQuestions[currentQuestion-1]]){
         score += 100;
+        if(sessionTime > 700){
+             var tempText = game.add.text(800,250,'Correct',{ font:"Lobster", fontSize: '40px', fill: '#458B00' });
+             tempText.anchor.setTo(0.5,1);
+             setTimeout(function(){ tempText.destroy(); },1000);  
+        }
+    }else{
+        if(sessionTime > 700){
+            var tempText = game.add.text(800,250,'Wrong',{ font:"Lobster", fontSize: '40px', fill: '#b20000' });
+            tempText.anchor.setTo(0.5,1);
+            setTimeout(function(){ tempText.destroy(); },1000);
+        }  
+    }
     answer.setStyle(wrongStyle);
     answerText[correctAnswer].setStyle(correctStyle);
     scoreText.text = 'Score: ' + score;
@@ -1133,6 +1149,11 @@ function createSource(){
     currentSource.scale.setTo(0.25,0.25);
     sourceAnimation = true;
     animateSource();
+    if(sessionTime > 600){
+        var tempText = game.add.text(450,car.y,'Go to ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); },2000);
+    }  
 }
 
 function collectSource () {
@@ -1142,8 +1163,13 @@ function collectSource () {
     sourceAnimation = false;
     currentSource.destroy();
     createDestination();
-    startTimer(10);
+    startTimer(5+(parseInt(sessionTime/100)));
     createClocks();
+    if(sessionTime > 600){
+        var tempText = game.add.text(450,car.y,'Go to ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); },2000);
+    }  
 }
 
 function animateSource(){
@@ -1218,6 +1244,11 @@ function collectDestination (){
         startTimer(40);
     }else{
         time+= 40;
+    }
+    if(sessionTime > 600){
+        var tempText = game.add.text(450,car.y,'Answer as many as you can',{ font:"Lobster", fontSize: '40px', fill: '#fbcd11' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); },2000);  
     }
 }
 
