@@ -1,9 +1,12 @@
 <script>
 var gameUser = <%= current_user.gameteam %>
 function fillForm(){
-    document.getElementById("result").value = "Q1A" + document.getElementById("challenge").value + "Q2A" + document.getElementById("skills").value;
-    for(i = 1; i < 12; i++)
-      document.getElementById("result").value += "F" + i + "A" +  document.getElementById("F"+i).value;
+    document.getElementById("result").value = "CH-A" + document.getElementById("challenge").value + ",SK-A" + document.getElementById("skills").value + ",E-A" + document.getElementById("enjoy").value + ",S-A" + document.getElementById("satisf").value;
+    if(gameUser){
+      document.getElementById("result").value += ",F-A" + document.getElementById("Again").value + ",R-A" + document.getElementById("Friends").value;
+      for(i = 1; i < 42; i++)
+        document.getElementById("result").value += ",EGF" + i + "-A" +  document.getElementById("EGF"+i).value;
+    }
     document.getElementById("flow").checked = true;
     document.getElementById("submit").click();
 }
@@ -68,11 +71,11 @@ function fillForm(){
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I felt in control of what I was doing
-      <select id="F1">
+    <label style="font-size:18px;color:#DAA520">I found the activity enjoyable
+      <select id="enjoy">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="3" selected="selected"> Neither agree or disagree </option>
         <option value="4">Agree</option>
         <option value="5">Strongly Agree</option>
       </select>
@@ -81,134 +84,671 @@ function fillForm(){
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I was absorbed intensely by the activity
-      <select id="F2">
+    <label style="font-size:18px;color:#DAA520">I am satisified with the method I used to learn about traffic signs
+      <select id="satisf">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="3" selected="selected"> Neither agree or disagree </option>
         <option value="4">Agree</option>
         <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<% if current_user.gameteam? %>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">Play more than once?
+      <select id="Again">
+        <option value="1">Yes</option>
+        <option value="2" selected="selected">Not Sure</option>
+        <option value="3">No</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I found the activities enjoyable
-      <select id="F3">
-        <option value="1">Strongly Disagree</option>
-        <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+    <label style="font-size:18px;color:#DAA520">Recommend to Friends?
+      <select id="Friends">
+        <option value="1">Yes</option>
+        <option value="2" selected="selected">Not Sure</option>
+        <option value="3">No</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I thought about other things
-      <select id="F4">
+    <label style="font-size:18px;color:#DAA520">Most of the gaming activities are related to the learning task
+      <select id="EGF1">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I found the activities interesting
-      <select id="F5">
+    <label style="font-size:18px;color:#DAA520">No distraction from the task is highlighted
+      <select id="EGF2">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I was frustrated by what I was doing
-      <select id="F6">
+    <label style="font-size:18px;color:#DAA520">Generally speaking, I can remain concentrated in the game
+      <select id="EGF3">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">the activities bored me
-      <select id="F7">
+    <label style="font-size:18px;color:#DAA520">I am not distracted from tasks that the player should concentrate on
+      <select id="EGF4">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I was aware of distractions
-      <select id="F8">
+    <label style="font-size:18px;color:#DAA520">I am not burdened with tasks that seem unrelated
+      <select id="EGF5">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">the activities excited my curiosity
-      <select id="F9">
+    <label style="font-size:18px;color:#DAA520">Workload in the game is adequate
+      <select id="EGF6">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I knew the right thing to do
-      <select id="F10">
+    <label style="font-size:18px;color:#DAA520">Overall game goals were presented in the beginning of the game
+      <select id="EGF7">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">It required a lot of effort for me to concentrate on the activities.
-      <select id="F11">
+    <label style="font-size:18px;color:#DAA520">Overall game goals were presented clearly
+      <select id="EGF8">
         <option value="1">Strongly Disagree</option>
         <option value="2">Disagree</option>
-        <option value="3" selected="selected">Neither agree nor disagree</option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
       </select>
     </label>
   </div>
 </div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">Intermediate goals were presented in the beginning of each scene
+      <select id="EGF9">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">Intermediate goals were presented clearly
+      <select id="EGF10">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I receive feedback on my progress in the game
+      <select id="EGF11">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I receive immediate feedback on my actions
+      <select id="EGF12">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I am notified of new tasks immediately
+      <select id="EGF13">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I am notified of new events immediately
+      <select id="EGF14">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I receive information on my success (or failure) of intermediate goals immediately
+      <select id="EGF15">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game provides ‘‘hints” in text that help me overcome the challenges
+      <select id="EGF16">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game provides ‘‘online support” that helps me overcome the challenges
+      <select id="EGF17">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game provides video or audio auxiliaries that help me overcome the challenges
+      <select id="EGF18">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The difficulty of challenges increase as my skills improved.
+      <select id="EGF19">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game provides new challenges with an appropriate pacing
+      <select id="EGF20">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game provides different levels of challenges that tailor to different players
+      <select id="EGF21">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I feel a sense of control and impact over the game
+      <select id="EGF22">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I know next step in the game
+      <select id="EGF23">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I feel a sense of control over the game
+      <select id="EGF24">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I forget about time passing while playing the game
+      <select id="EGF25">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I become unaware of my surroundings while playing the game
+      <select id="EGF26">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I temporarily forget worries about everyday life while playing the game
+      <select id="EGF27">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I experience an altered sense of time
+      <select id="EGF28">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I can become involved in the game
+      <select id="EGF29">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I feel emotionally involved in the game
+      <select id="EGF30">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I feel viscerally involved in the game
+      <select id="EGF31">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I feel cooperative toward other classmates
+      <select id="EGF32">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I strongly collaborate with other classmates
+      <select id="EGF33">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The cooperation in the game is helpful to the learning
+      <select id="EGF34">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game supports social interaction between players (chat, etc)
+      <select id="EGF35">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game supports communities within the game
+      <select id="EGF36">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game supports communities outside the game
+      <select id="EGF37">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game increases my knowledge
+      <select id="EGF38">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I catch the basic ideas of the knowledge taught
+      <select id="EGF39">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I try to apply the knowledge in the game
+      <select id="EGF40">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">The game motivates the player to integrate the knowledge taught
+      <select id="EGF41">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I want to know more about the knowledge taught
+      <select id="EGF42">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3">Somewhat Disagree</option>
+        <option value="4" selected="selected">Neither agree nor disagree</option>
+        <option value="5">Somewhat Agree</option>
+        <option value="6">Agree</option>
+        <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<% end %>
 <div class="row">
 	<div class="large-3 columns large-centered">
 		<a class="button" onclick="fillForm()" id="playButton"><i class="icon-ok"></i>Submit Answers</a>
