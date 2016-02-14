@@ -1,11 +1,14 @@
 <script>
 var gameUser = <%= current_user.gameteam %>
 function fillForm(){
-    document.getElementById("result").value = "CH-A" + document.getElementById("challenge").value + ",SK-A" + document.getElementById("skills").value + ",E-A" + document.getElementById("enjoy").value + ",S-A" + document.getElementById("satisf").value;
+    document.getElementById("result").value = "CH-A" + document.getElementById("challenge").value + ",SK-A" + document.getElementById("skills").value + ",S-A" + document.getElementById("satisf").value;
     if(gameUser){
-      document.getElementById("result").value += ",F-A" + document.getElementById("Again").value + ",R-A" + document.getElementById("Friends").value;
-      for(i = 1; i < 42; i++)
+      document.getElementById("result").value += ",E-A" + document.getElementById("enjoy").value + ",F-A" + document.getElementById("Again").value + ",R-A" + document.getElementById("Friends").value;
+      for(i = 1; i < 43; i++)
         document.getElementById("result").value += ",EGF" + i + "-A" +  document.getElementById("EGF"+i).value;
+    }else{
+      for(i = 1; i < 12; i++)
+        document.getElementById("result").value += ",F" + i + "-A" +  document.getElementById("F"+i).value;
     }
     document.getElementById("flow").checked = true;
     document.getElementById("submit").click();
@@ -71,19 +74,6 @@ function fillForm(){
 </div>
 <div class="row">
   <div class="large-6 columns large-centered">
-    <label style="font-size:18px;color:#DAA520">I found the activity enjoyable
-      <select id="enjoy">
-        <option value="1">Strongly Disagree</option>
-        <option value="2">Disagree</option>
-        <option value="3" selected="selected"> Neither agree or disagree </option>
-        <option value="4">Agree</option>
-        <option value="5">Strongly Agree</option>
-      </select>
-    </label>
-  </div>
-</div>
-<div class="row">
-  <div class="large-6 columns large-centered">
     <label style="font-size:18px;color:#DAA520">I am satisified with the method I used to learn about traffic signs
       <select id="satisf">
         <option value="1">Strongly Disagree</option>
@@ -96,6 +86,19 @@ function fillForm(){
   </div>
 </div>
 <% if current_user.gameteam? %>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I found the activity enjoyable
+      <select id="enjoy">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected"> Neither agree or disagree </option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
 <div class="row">
   <div class="large-6 columns large-centered">
     <label style="font-size:18px;color:#DAA520">Play more than once?
@@ -744,6 +747,150 @@ function fillForm(){
         <option value="5">Somewhat Agree</option>
         <option value="6">Agree</option>
         <option value="7">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<% else %>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I felt in control of what I was doing
+      <select id="F1">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I was absorbed intensely by the activity
+      <select id="F2">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I found the activities enjoyable
+      <select id="F3">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I thought about other things
+      <select id="F4">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I found the activities interesting
+      <select id="F5">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I was frustrated by what I was doing
+      <select id="F6">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">the activities bored me
+      <select id="F7">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I was aware of distractions
+      <select id="F8">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">the activities excited my curiosity
+      <select id="F9">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">I knew the right thing to do
+      <select id="F10">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
+      </select>
+    </label>
+  </div>
+</div>
+<div class="row">
+  <div class="large-6 columns large-centered">
+    <label style="font-size:18px;color:#DAA520">It required a lot of effort for me to concentrate on the activities.
+      <select id="F11">
+        <option value="1">Strongly Disagree</option>
+        <option value="2">Disagree</option>
+        <option value="3" selected="selected">Neither agree nor disagree</option>
+        <option value="4">Agree</option>
+        <option value="5">Strongly Agree</option>
       </select>
     </label>
   </div>
