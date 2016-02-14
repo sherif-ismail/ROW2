@@ -34,13 +34,15 @@
   </div>
 </div>
   </header>
-  <div id = "udpatescorediv" style="display: none;">
-    <%=link_to('ss', user_path(current_user, score: 123121), method: 'put', id: 'updatescore')%>
-  </div>
 
 <div class="row expanded section" >
-  <div class="large-12 columns small-centered" id="game">
+  <div class="large-10 columns small-centered">
+    <div class="row" id="game">
 
+    </div>
+    <div class="row">
+        <img src= '<%= asset_path 'ControlsBar3.png' %>' style="height:40px;width:1000px">
+    </div>
   </div>
 </div>
 <div class="row footer section expanded" id="footer">
@@ -129,12 +131,12 @@
     var timeStyle = { font:"Exo", fontSize: '28px', fill: '#FFFFFF' };
 
     function preload() {
-        game.load.bitmapFont('desyrel', '<%= asset_path 'desyrel.png' %>', '<%= asset_path 'desyrel.xml' %>');
         game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143);
         game.load.image('traffic_1', '<%= asset_path 'traffic_1.png' %>');
         game.load.image('traffic_2', '<%= asset_path 'traffic_2.png' %>');
         game.load.image('traffic_3', '<%= asset_path 'traffic_3.png' %>');
         game.load.image('traffic_4', '<%= asset_path 'traffic_4.png' %>');
+        game.load.image('GotIt', '<%= asset_path 'BlueButton.png' %>');
         game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
         game.load.image('square', '<%= asset_path 'square.png' %>');
         game.load.image('triangle', '<%= asset_path 'triangle.png' %>');
@@ -295,9 +297,6 @@
     nitroTank.anchor.setTo(0,0);
     nitroTank.scale.setTo(0.25,0.15);
 
-    setInterval(updateNitro,150)
-    setInterval(updateSpeed,100)
-    setInterval(displaySessionTime,1000);
 }
 
 function createStreets(){
@@ -878,9 +877,46 @@ function update() {
 
 function createPopup(){
     Popup = game.add.sprite(game.world.centerX+20, game.world.centerY+30, 'popup');
-    Popup.alpha = 0.8;
+    //Popup.alpha = 0.95;
     Popup.anchor.set(0.5);
     Popup.inputEnabled = true;
+    Popup.scale.setTo(1.5,1);
+
+    currentImage = game.add.sprite(-135,+30,'GotIt');
+    currentImage.scale.setTo(0.3,0.3);
+    //currentImage.inputEnabled = true;
+
+    questionText = game.add.text(-240, -200, "You have to pass your license exam.\nDrive the examiners from one point to another in the fastest time possible and then answer their questions.\nThe faster you drive them and the more questions you answer, the higher your score.\nYou have 15 minutes, good luck ;)" + '', { font: "24px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width-300 ,boundsAlignH : "right", align: "center" } );
+
+    answerText[0] = game.add.text(-50, +155, "Got it!", { font: "30px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: currentImage.width ,boundsAlignH : "right", align: "center" });
+    answerText[0].inputEnabled = true;
+    answerText[0].events.onInputDown.add(displayQuiz, this);
+    answerText[0].input.priorityID = 1;
+    answerText[0].input.useHandCursor = true;
+    answerText[0].events.onInputOver.add(GotHoverIn, this);
+    answerText[0].events.onInputOut.add(GotHoverOut, this);
+    answerText[0].anchor.setTo(0,0);
+    Popup.addChild(questionText);
+    Popup.addChild(currentImage);
+    Popup.addChild(answerText[0]);
+}
+
+function GotHoverIn(answer){
+    answer.setStyle({ font: "30px Lobster", fill: "#000000", wordWrap: true, wordWrapWidth: currentImage.width ,boundsAlignH : "right", align: "center" })
+}
+
+function GotHoverOut(answer){
+    answer.setStyle({ font: "30px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: currentImage.width ,boundsAlignH : "right", align: "center" })
+}
+
+function displayQuiz(){
+    Popup.destroy();
+    Popup = game.add.sprite(game.world.centerX+20, game.world.centerY+30, 'popup');
+    Popup.alpha = 0.95;
+    Popup.anchor.set(0.5);
+    Popup.inputEnabled = true;
+    Popup.scale.setTo(2,1.1);
+    
     normalStyle = { font: "20px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, boundsAlignH : "right", align: "center" };
     hoverStyle = { font: "20px Arial", fill: "#f2d000", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" };
     wrongStyle = { font: "20px Arial", fill: "#b20000", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" };
@@ -888,7 +924,6 @@ function createPopup(){
     //Popup.input.enableDrag();
 
     //  And click the close button to close it down again
-    Popup.scale.setTo(2,1.1);
     answerText[0] = game.add.text(+235, +-50, "Answer 1", normalStyle);
     answerText[0].inputEnabled = true;
     answerText[0].events.onInputDown.add(GiveAnswer, this);
@@ -934,12 +969,19 @@ function createPopup(){
     questionText = game.add.text(+220, -170, " Question " + '', { font: "24px Arial", fill: "#fbcd11", wordWrap: true, wordWrapWidth: Popup.width,boundsAlignH : "right", align: "center" } );
     questionText.anchor.set(1,0);
     Popup.addChild(questionText);
-    NextQuestion()
-    Popup.visible = false;
+    NextQuestion();
+    hidePopup();
+    setInterval(updateNitro,150)
+    setInterval(updateSpeed,100)
+    setInterval(displaySessionTime,1000);
 }
 
-
 function hidePopup(){
+    if(sessionTime > 600){
+        var tempText = game.add.text(450,car.y,'Go to yellow ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); },2000);
+    }
     Popup.visible = false;
 }
 
@@ -1148,12 +1190,7 @@ function createSource(){
     currentSource.anchor.setTo(0.5,0.5);
     currentSource.scale.setTo(0.25,0.25);
     sourceAnimation = true;
-    animateSource();
-    if(sessionTime > 600){
-        var tempText = game.add.text(450,car.y,'Go to ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
-        tempText.anchor.setTo(0.5,1);
-        setTimeout(function(){ tempText.destroy(); },2000);
-    }  
+    animateSource();  
 }
 
 function collectSource () {
@@ -1166,7 +1203,7 @@ function collectSource () {
     startTimer(5+(parseInt(sessionTime/100)));
     createClocks();
     if(sessionTime > 600){
-        var tempText = game.add.text(450,car.y,'Go to ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
+        var tempText = game.add.text(450,car.y,'Go to green ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
         tempText.anchor.setTo(0.5,1);
         setTimeout(function(){ tempText.destroy(); },2000);
     }  
@@ -1275,7 +1312,7 @@ function destroyText(text){
 }
 
 function updateSpeed(){
-    speedText.text = 'Speed: ' + speed;
+    speedText.text = 'Speed: ' + parseInt(speed/3);
 }
 
 function displaySessionTime(){
