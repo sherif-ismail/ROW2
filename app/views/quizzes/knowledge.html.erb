@@ -36,7 +36,7 @@
 <h1 class="" style = "color:black">Knowledge Quiz</h1>
 <body>
 <div class="row expanded section" >
-  <div class="large-12 columns small-centered" id="game">
+  <div class="large-10 columns small-centered" id="game">
   </div>
 </div>
 <div class="row footer section expanded" id="footer">
@@ -155,7 +155,7 @@ function update() {
 
 function createPopup(){
     Popup = game.add.sprite(game.world.centerX+20, game.world.centerY+30, 'popup');
-    Popup.alpha = 0.8;
+    Popup.alpha = 0.98;
     Popup.anchor.set(0.5);
     Popup.inputEnabled = true;
     normalStyle = { font: "20px Arial", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width, boundsAlignH : "right", align: "center" };
