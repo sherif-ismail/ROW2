@@ -41,7 +41,7 @@
 
     </div>
     <div class="row">
-        <img src= '<%= asset_path 'ControlsBar3.png' %>' style="height:40px;width:1000px">
+        <img src= '<%= asset_path 'ControlsBar3.png' %>' style="height:45px;width:1000px">
     </div>
   </div>
 </div>
@@ -176,7 +176,7 @@
     }
 
     function doNothing(){
-        loadingCounter = -1;
+        setTimeout(function(){ loadingCounter = -1; },2000);
     }
 
     function IntroCreate(){
@@ -886,7 +886,7 @@ function createPopup(){
     currentImage.scale.setTo(0.3,0.3);
     //currentImage.inputEnabled = true;
 
-    questionText = game.add.text(-240, -200, "You have to pass your license exam.\nDrive the examiners from one point to another in the fastest time possible and then answer their questions.\nThe faster you drive them and the more questions you answer, the higher your score.\nYou have 15 minutes, good luck ;)" + '', { font: "24px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width-300 ,boundsAlignH : "right", align: "center" } );
+    questionText = game.add.text(-240, -240, "You have to pass your license exam.\nYour task is to drive the examiners from one point to another in the fastest time possible and then answer their questions.\nThe faster you drive them and the more questions you answer, the higher your score.\nAs the time passes, the time given for you to complete your task is less so take care.\nYou have 15 minutes, good luck ;)" + '', { font: "22px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width-300 ,boundsAlignH : "right", align: "center" } );
 
     answerText[0] = game.add.text(-50, +155, "Got it!", { font: "30px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: currentImage.width ,boundsAlignH : "right", align: "center" });
     answerText[0].inputEnabled = true;
@@ -978,7 +978,7 @@ function displayQuiz(){
 
 function hidePopup(){
     if(sessionTime > 600){
-        var tempText = game.add.text(450,car.y,'Go to yellow ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
+        var tempText = game.add.text(car.x,car.y,'Go to yellow ring',{ font:"Lobster", fontSize: '28px', fill: '#e7d94c' });
         tempText.anchor.setTo(0.5,1);
         setTimeout(function(){ tempText.destroy(); },2000);
     }
@@ -1192,8 +1192,14 @@ function createSource(){
     sourceAnimation = true;
     animateSource();  
 }
-
+var StopMessageBlock = false;
 function collectSource () {
+    if(sessionTime > 600 && inHalo() && !StopMessageBlock){
+        StopMessageBlock = true;
+        var tempText = game.add.text(car.x,car.y,'Stop',{ font:"Lobster", fontSize: '46px', fill: 'yellow' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); StopMessageBlock = false;},500);
+    }  
     if(!inHalo() || speed != 0){
         return;
     }
@@ -1203,7 +1209,7 @@ function collectSource () {
     startTimer(5+(parseInt(sessionTime/100)));
     createClocks();
     if(sessionTime > 600){
-        var tempText = game.add.text(450,car.y,'Go to green ring',{ font:"Lobster", fontSize: '40px', fill: '#e7d94c' });
+        var tempText = game.add.text(car.x,car.y,'Go to green ring',{ font:"Lobster", fontSize: '28px', fill: 'green' });
         tempText.anchor.setTo(0.5,1);
         setTimeout(function(){ tempText.destroy(); },2000);
     }  
@@ -1267,6 +1273,12 @@ function createDestination(){
 }
 
 function collectDestination (){
+    if(sessionTime > 600 && inHalo() && !StopMessageBlock){
+        StopMessageBlock = true;
+        var tempText = game.add.text(car.x,car.y,'Stop',{ font:"Lobster", fontSize: '46px', fill: 'green' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); StopMessageBlock = false;},500);
+    }  
     if(!inHalo() || speed != 0){
         return;
     }
@@ -1283,7 +1295,7 @@ function collectDestination (){
         time+= 40;
     }
     if(sessionTime > 600){
-        var tempText = game.add.text(450,car.y,'Answer as many as you can',{ font:"Lobster", fontSize: '40px', fill: '#fbcd11' });
+        var tempText = game.add.text(450,car.y,'Answer fast',{ font:"Lobster", fontSize: '30px', fill: '#fbcd11' });
         tempText.anchor.setTo(0.5,1);
         setTimeout(function(){ tempText.destroy(); },2000);  
     }
