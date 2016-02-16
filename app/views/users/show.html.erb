@@ -115,14 +115,14 @@
       </div>
     </div>
 </html>
-
-<div class="center jumbotron">
 <% if is_admin? %>
+<div class="center jumbotron">
 <%= link_to "Delete All Questions", deleteData_path, class: "btn btn-lg btn-primary" %>
   <%= form_tag importData_path, multipart: true do %>
   <%= file_field_tag :file, class: "btn btn-lg btn-primary" %>
   <%= submit_tag "Import CSV", class: "btn btn-lg btn-primary" %>
 <% end %>
-<% end %>
 </div>
+<% end %>
+
 
