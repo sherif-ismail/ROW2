@@ -35,6 +35,19 @@
         <p style="color:#333;font-weight:bold;font-size:24px"> Welcome <b style="color:#DAA520"><%= @user.name %></b>, your highest score so far is <b style = "color:#DAA520"><%= @user.score %></b>, try to break it ;)</p>
       </div>
     </div>
+    <div class="row full-width center" >
+      <div class="large-12 columns large-centered">
+        <% if @user.score >= 20000 %>
+            <img src= '<%= asset_path 'Gold.png' %>' style="height:60px;width:60px">
+        <% elsif @user.score >= 15000 %>
+            <img src= '<%= asset_path 'Silver.png' %>' style="height:60px;width:60px">
+        <% elsif @user.score >= 10000 %>
+            <img src= '<%= asset_path 'Bronze.png' %>' style="height:60px;width:60px">
+        <% else %>
+            <p style="color:#333;font-weight:bold;font-size:24px"> You have no medals yet </p>
+        <% end %>
+      </div>
+    </div>
     <div class="row section" id="about">
       <div class="large-3 columns small-centered"> 
         <h4 class="title center" style = "color:#DAA520">About</h4>

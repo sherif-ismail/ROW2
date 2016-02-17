@@ -32,14 +32,23 @@
   </div>
   <% @users.each do |user| %>
   <div class="row section" >
-    <div class="large-8 columns large-centered" id="highscorecell">
+    <div class="large-10 columns large-centered" id="highscorecell">
       <div class="row">
         <div class="large-2 columns">
           <b style="color:#444444;font-size:26px;text-align: center;"><%=rank%></b>
         </div>  
         <div class="large-4 columns">
           <b style="color:#444444;font-size:26px;text-align: center;"><%=user.name%></b>
-        </div>            
+        </div>
+         <div class="large-2 columns">
+        <% if user.score >= 20000 %>
+            <img src= '<%= asset_path 'Gold.png' %>' style="height:40px;width:40px">
+        <% elsif user.score >= 15000 %>
+            <img src= '<%= asset_path 'Silver.png' %>' style="height:40px;width:40px">
+        <% elsif user.score >= 10000 %>
+            <img src= '<%= asset_path 'Bronze.png' %>' style="height:40px;width:40px">
+        <% end %> 
+        </div>             
         <div class="large-2 columns">
           <b style="color:#DAA520;font-size:26px;text-align: center;"><%=user.score%></b>
         </div>

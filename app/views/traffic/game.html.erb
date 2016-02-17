@@ -112,6 +112,7 @@
     var timerText;
     var time;
     var Popup;
+    var medal;
     var allQuestions = <%= raw @questions.to_json %>;
     var allAnswers = <%= raw @answers.to_json %>;
     var allCategories = <%= raw @categories.to_json %>;
@@ -129,6 +130,11 @@
     var wrongStyle;
     var barStyle = { font:"Lobster", fontSize: '30px', fill: '#FFFFFF' };
     var timeStyle = { font:"Exo", fontSize: '28px', fill: '#FFFFFF' };
+    var tempaa;
+    var tempab;
+    var tempac;
+    var tempad;
+    var tempae;
 
     function preload() {
         game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143);
@@ -139,6 +145,9 @@
         game.load.image('GotIt', '<%= asset_path 'BlueButton.png' %>');
         game.load.image('white_background', '<%= asset_path 'white_background.png' %>');
         game.load.image('square', '<%= asset_path 'square.png' %>');
+        game.load.image('bronze_medal', '<%= asset_path 'Bronze.png' %>');
+        game.load.image('silver_medal', '<%= asset_path 'Silver.png' %>');
+        game.load.image('gold_medal', '<%= asset_path 'Gold.png' %>');
         game.load.image('triangle', '<%= asset_path 'triangle.png' %>');
         game.load.image('midan', '<%= asset_path 'midan.png' %>');
         game.load.image('popup',  '<%= asset_path 'Black_button.png' %>');
@@ -249,24 +258,23 @@
     createStreets();
     createAreas();
 
-    sessionTimer = game.add.sprite(180,-45,'timer2');
+    sessionTimer = game.add.sprite(350,-45,'timer2');
     sessionTimer.scale.setTo(0.15,0.15);
-    sessionText = game.add.text(205,2,'',timeStyle);
+    sessionText = game.add.text(375,2,'',timeStyle);
 
     examTimer = game.add.sprite(488,-45,'timer3');
     examTimer.scale.setTo(0.1,0.15);
 
-    speedText = game.add.text(330, 0, 'Score: 0', barStyle);
+    speedText = game.add.text(620, 0, 'Speed: 0', barStyle);
 
     // The score
     scoreText = game.add.text(10, 0, 'Score: 0', barStyle);
 
     // game.add.text(420, 5, 'Nitro: 60', { fontSize: '32px', fill: '#FFFFFF',  });
-    msgText = game.add.text(640, 0, 'Get Out!', barStyle);
+    //msgText = game.add.text(640, 0, 'Get Out!', barStyle);
 
     timerText = game.add.text(505, 2, '', timeStyle);
 
-    msgText.visible = false;
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
 
@@ -841,11 +849,6 @@ function update() {
             speed += 3
     }
 
-    msgText.visible = false;
-    if(inArea()){
-        msgText.visible = true;
-    }
-
     directionSpeed += (speed*speed)/(speed*5);
 
     if(speed > 0 && move){
@@ -882,13 +885,20 @@ function createPopup(){
     Popup.inputEnabled = true;
     Popup.scale.setTo(1.5,1);
 
-    currentImage = game.add.sprite(-135,+30,'GotIt');
-    currentImage.scale.setTo(0.3,0.3);
+    currentImage = game.add.sprite(65,+80,'GotIt');
+    currentImage.scale.setTo(0.25,0.25);
     //currentImage.inputEnabled = true;
+    tempaa = game.add.sprite(300,380,'bronze_medal');
+    tempaa.scale.setTo(0.5,0.5);
+    tempab = game.add.sprite(525,380,'silver_medal');
+    tempab.scale.setTo(0.5,0.5);
+    tempac = game.add.sprite(750,380,'gold_medal');
+    tempac.scale.setTo(0.5,0.5);
+    tempad = game.add.text(225,400,"10000                                    15000                                    20000", { font: "22px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width-200 ,boundsAlignH : "left", align: "left" } );
+    tempae = game.add.text(200,500,"You have 15 minutes, good luck ;)", { font: "26px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width-300 ,boundsAlignH : "left", align: "left" } );
+    questionText = game.add.text(-240, -240, "You have to pass your license exam.\nYour task is to drive the examiners from one point to another in the fastest time possible and then answer their questions.\nThe faster you drive them and the more questions you answer, the higher your score.\nAs the time passes, the time given for you to complete your task is less so take care." + '', { font: "22px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width-300 ,boundsAlignH : "right", align: "center" } );
 
-    questionText = game.add.text(-240, -240, "You have to pass your license exam.\nYour task is to drive the examiners from one point to another in the fastest time possible and then answer their questions.\nThe faster you drive them and the more questions you answer, the higher your score.\nAs the time passes, the time given for you to complete your task is less so take care.\nYou have 15 minutes, good luck ;)" + '', { font: "22px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: Popup.width-300 ,boundsAlignH : "right", align: "center" } );
-
-    answerText[0] = game.add.text(-50, +155, "Got it!", { font: "30px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: currentImage.width ,boundsAlignH : "right", align: "center" });
+    answerText[0] = game.add.text(130, +180, "Got it!", { font: "30px Lobster", fill: "#ffffff", wordWrap: true, wordWrapWidth: currentImage.width ,boundsAlignH : "right", align: "center" });
     answerText[0].inputEnabled = true;
     answerText[0].events.onInputDown.add(displayQuiz, this);
     answerText[0].input.priorityID = 1;
@@ -910,6 +920,11 @@ function GotHoverOut(answer){
 }
 
 function displayQuiz(){
+    tempaa.destroy();
+    tempab.destroy();
+    tempac.destroy();
+    tempad.destroy();
+    tempae.destroy();
     Popup.destroy();
     Popup = game.add.sprite(game.world.centerX+20, game.world.centerY+30, 'popup');
     Popup.alpha = 0.95;
@@ -1091,7 +1106,7 @@ function GiveAnswer(answer){
     blockAnswer = true;
     var old = score;
     if(answer.text == allAnswers[orderOfQuestions[currentQuestion-1]]){
-        score += 100;
+        updateScore(score+100);
         if(sessionTime > 700){
              var tempText = game.add.text(800,250,'Correct',{ font:"Lobster", fontSize: '40px', fill: '#458B00' });
              tempText.anchor.setTo(0.5,1);
@@ -1106,7 +1121,6 @@ function GiveAnswer(answer){
     }
     answer.setStyle(wrongStyle);
     answerText[correctAnswer].setStyle(correctStyle);
-    scoreText.text = 'Score: ' + score;
     var longAnswer = 0;
     if(answerText[correctAnswer].text.length >= 50)
         longAnswer = 1500
@@ -1123,35 +1137,6 @@ function AnswerHoverOut(answer){
     if(blockAnswer)
         return;
     answer.setStyle(normalStyle)
-}
-
-function formatAnswer(ans){
-    var cutoff = 20;
-    var words = ans.split(' ');
-    var newAnswer = "";
-    var j = 0;
-    var line = words[words.length-1];
-    for(counter = words.length - 2; counter >= 0 ; counter--){
-        if(j < cutoff){
-            line = words[counter] + " " + line;
-            j += words[counter].length;
-        }else{
-            if(newAnswer == ""){
-                newAnswer = line
-            }else{
-                newAnswer = line + "\n" + newAnswer; 
-            }
-            alert("nA:" +newAnswer);
-            line = words[counter];
-            j = words[counter].length;
-        }
-        alert(words[i]);
-        alert(line);
-    }
-    if(line.length >0){
-        newAnswer = line + "\n" + newAnswer;
-    }
-    return newAnswer;
 }
 
 function addSpaces(ans){
@@ -1206,7 +1191,7 @@ function collectSource () {
     sourceAnimation = false;
     currentSource.destroy();
     createDestination();
-    startTimer(5+(parseInt(sessionTime/100)));
+    startTimer(6+(parseInt(sessionTime/100)));
     createClocks();
     if(sessionTime > 600){
         var tempText = game.add.text(car.x,car.y,'Go to green ring',{ font:"Lobster", fontSize: '28px', fill: 'green' });
@@ -1285,8 +1270,7 @@ function collectDestination (){
     destAnimation = false;
     currentDestination.destroy();
     Popup.visible = true;
-    score += 50*time;
-    scoreText.text = 'Score: ' + score;
+    updateScore(score+100*time)
     collected = true;
     clocks.destroy();
     if(time <= 0){
@@ -1325,6 +1309,32 @@ function destroyText(text){
 
 function updateSpeed(){
     speedText.text = 'Speed: ' + parseInt(speed/3);
+}
+
+function updateScore(s){
+    if(s >= 20000 && score < 20000){
+        medal.destroy();
+        medal = game.add.sprite(250,2,"gold_medal");
+        medal.scale.setTo(0.22,0.22);
+        var tempText = game.add.text(500,300,'You won the gold medal!',{ font:"Lobster", fontSize: '50px', fill: '#B29600' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); },3000);  
+    }else if(s >= 15000 && score < 15000){
+        medal.destroy();
+        medal = game.add.sprite(250,2,"silver_medal");
+        medal.scale.setTo(0.22,0.22);
+        var tempText = game.add.text(500,300,'You won the silver medal!',{ font:"Lobster", fontSize: '50px', fill: '#C0C0C0' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); },3000);  
+    }else if (s >= 10000 && score < 10000){
+        medal = game.add.sprite(250,2,"bronze_medal");
+        medal.scale.setTo(0.22,0.22);
+        var tempText = game.add.text(500,300,'You won the bronze medal!',{ font:"Lobster", fontSize: '50px', fill: '#CD7F32' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); },3000);  
+    }
+    score = s;
+    scoreText.text = 'Score: ' + score;
 }
 
 function displaySessionTime(){
