@@ -38,11 +38,11 @@
     <div class="row full-width center" >
       <div class="large-12 columns large-centered">
         <% if @user.score >= 20000 %>
-            <img src= '<%= asset_path 'Gold.png' %>' style="height:60px;width:60px">
+            <img src= '<%= asset_path 'Gold.png' %>' style="height:100px;width:100px">
         <% elsif @user.score >= 15000 %>
-            <img src= '<%= asset_path 'Silver.png' %>' style="height:60px;width:60px">
+            <img src= '<%= asset_path 'Silver.png' %>' style="height:100px;width:100px">
         <% elsif @user.score >= 10000 %>
-            <img src= '<%= asset_path 'Bronze.png' %>' style="height:60px;width:60px">
+            <img src= '<%= asset_path 'Bronze.png' %>' style="height:100px;width:100px">
         <% else %>
             <p style="color:#333;font-weight:bold;font-size:24px"> You have no medals yet </p>
         <% end %>
