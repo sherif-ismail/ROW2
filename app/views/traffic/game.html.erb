@@ -135,7 +135,6 @@
     var tempac;
     var tempad;
     var tempae;
-    var haloText;
 
     function preload() {
         game.load.spritesheet('button-start','<%= asset_path 'button-start.png' %>', 401, 143);
@@ -1175,17 +1174,22 @@ function createSource(){
     currentSource = halos.create(parseInt(cordinates[0]),parseInt(cordinates[1]),"src_halo_"+sourceFrame);
     currentSource.anchor.setTo(0.5,0.5);
     currentSource.scale.setTo(0.25,0.25);
-    setTimeout(function(){ haloText = game.add.text(parseInt(cordinates[0])-15,parseInt(cordinates[1])-52,'Stop',{ font:"Lobster", fontSize: '28px', fill: 'yellow' });  },1000);
     sourceAnimation = true;
     animateSource();  
 }
-function collectSource () { 
+var StopMessageBlock = false;
+function collectSource () {
+    if(sessionTime > 600 && inHalo() && !StopMessageBlock){
+        StopMessageBlock = true;
+        var tempText = game.add.text(car.x,car.y,'Stop',{ font:"Lobster", fontSize: '46px', fill: 'yellow' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); StopMessageBlock = false;},500);
+    }  
     if(!inHalo() || speed != 0){
         return;
     }
     sourceAnimation = false;
     currentSource.destroy();
-    haloText.destroy();
     createDestination();
     startTimer(6+(parseInt(sessionTime/100)));
     createClocks();
@@ -1249,12 +1253,17 @@ function createDestination(){
     currentDestination = halos.create(parseInt(cordinates[0]),parseInt(cordinates[1]),"dest_halo_"+destFrame);
     currentDestination.anchor.setTo(0.5,0.5);
     currentDestination.scale.setTo(0.25,0.25);
-    setTimeout(function(){ haloText = game.add.text(parseInt(cordinates[0])-15,parseInt(cordinates[1])-52,'Stop',{ font:"Lobster", fontSize: '28px', fill: '#00E500' }); },1000);
     destAnimation = true;
     animateDestination();
 }
 
-function collectDestination (){  
+function collectDestination (){
+    if(sessionTime > 600 && inHalo() && !StopMessageBlock){
+        StopMessageBlock = true;
+        var tempText = game.add.text(car.x,car.y,'Stop',{ font:"Lobster", fontSize: '46px', fill: 'green' });
+        tempText.anchor.setTo(0.5,1);
+        setTimeout(function(){ tempText.destroy(); StopMessageBlock = false;},500);
+    }  
     if(!inHalo() || speed != 0){
         return;
     }
@@ -1263,7 +1272,6 @@ function collectDestination (){
     Popup.visible = true;
     updateScore(score+100*time)
     collected = true;
-    haloText.destroy();
     clocks.destroy();
     if(time <= 0){
         startTimer(40);
