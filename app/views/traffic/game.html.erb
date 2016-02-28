@@ -1175,7 +1175,7 @@ function createSource(){
     currentSource = halos.create(parseInt(cordinates[0]),parseInt(cordinates[1]),"src_halo_"+sourceFrame);
     currentSource.anchor.setTo(0.5,0.5);
     currentSource.scale.setTo(0.25,0.25);
-    haloText = game.add.text(parseInt(cordinates[0])-15,parseInt(cordinates[1])-52,'Stop',{ font:"Lobster", fontSize: '28px', fill: 'yellow' }); 
+    setTimeout(function(){ haloText = game.add.text(parseInt(cordinates[0])-15,parseInt(cordinates[1])-52,'Stop',{ font:"Lobster", fontSize: '28px', fill: 'yellow' });  },1000);
     sourceAnimation = true;
     animateSource();  
 }
@@ -1249,7 +1249,7 @@ function createDestination(){
     currentDestination = halos.create(parseInt(cordinates[0]),parseInt(cordinates[1]),"dest_halo_"+destFrame);
     currentDestination.anchor.setTo(0.5,0.5);
     currentDestination.scale.setTo(0.25,0.25);
-    haloText = game.add.text(parseInt(cordinates[0])-15,parseInt(cordinates[1])-52,'Stop',{ font:"Lobster", fontSize: '28px', fill: '#5dae5d' }); 
+    setTimeout(function(){ haloText = game.add.text(parseInt(cordinates[0])-15,parseInt(cordinates[1])-52,'Stop',{ font:"Lobster", fontSize: '28px', fill: '#00E500' }); },1000);
     destAnimation = true;
     animateDestination();
 }
